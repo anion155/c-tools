@@ -3,7 +3,6 @@
 
 #include <ctype.h>
 #include <da.h>
-#include <sb_utf.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -185,9 +184,6 @@ String_View sv__chop_while_i(String_View *sv, bool (*predicate)(char character, 
 
 #define sv_first_utf_length(sv) (utf8_character_lengths[(uint8_t)da_first((sv))])
 
-size_t sv__utf_length(String_View sv, size_t *bytes_overrun);
-#define sv_utf_length(sv, ...) sv__utf_length(sv_from_like(sv), WITH_DEFAULT(NULL, __VA_ARGS__))
-
 #define SV_FMT "%.*s"
 #define sv_fmt_arg(sv) (int)(sv).count, (sv).data
 
@@ -195,9 +191,6 @@ size_t sv__utf_length(String_View sv, size_t *bytes_overrun);
 
 #if defined(SB_IMPL) && !defined(SB_IMPL_C)
 #define SB_IMPL_C
-
-#define SB_UTF_IMPL
-#include <sb_utf.h>
 
 String_Builder *sb_null_terminate(String_Builder *sb) {
   if (sb->capacity > sb->count && sb->data[sb->count] == '\0') {
@@ -248,18 +241,6 @@ String_View sv__chop_while(String_View *sv, bool (*predicate)(char character)) {
 
 String_View sv__chop_while_i(String_View *sv, bool (*predicate)(char character, size_t index)) {
   return sv_chop_while_macro(sv, character, predicate(*character, index));
-}
-
-size_t sv__utf_length(String_View sv, size_t *bytes_overrun) {
-  size_t count = 0;
-  size_t bytes;
-  while (sv.count) {
-    bytes = sv_first_utf_length(sv);
-    if (bytes_overrun && sv.count <= bytes) *bytes_overrun = bytes - sv.count;
-    sv_chop_left(&sv, bytes);
-    count += 1;
-  }
-  return count;
 }
 
 String_View sv_trim_left(String_View *sv) {

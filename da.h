@@ -20,6 +20,12 @@
      da_free(&values);
    }
  * ```
+ *
+ * ## Requirements
+ *
+ * - C23
+ * - GNU statement expressions
+ * - [defines.h](./defines.h)
  */
 
 #ifndef DA_H
