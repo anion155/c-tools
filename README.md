@@ -100,7 +100,7 @@ int main(void) {
   da_append(&values, 10);
   da_append_many(&values, 20, 30, 40);
 
-  da_foreach(&values, value) {
+  da_foreach(values, value) {
     printf("%d\n", *value);
   }
 

@@ -14,7 +14,7 @@
      Int_Array values = {0};
      da_append(&values, 10);
      da_append_many(&values, 20, 30, 40);
-     da_foreach(&values, value) {
+     da_foreach(values, value) {
        printf("%d\n", *value);
      }
      da_free(&values);
@@ -409,10 +409,10 @@
  * - `id##_data` - pointer to start of the array,
  * - `id##_count` - count of the array.
  */
-#define da_slice_chop_while(das, predicate) ({     \
-  typeof(*(das)) *_das_cwm_ = (das);               \
-  size_t _index_ = da_find(*_das_cwm_, predicate); \
-  da_slice_chop_left(_das_cwm_, _index_);          \
+#define da_slice_chop_while(das, id, predicate) ({     \
+  typeof(*(das)) *_das_cwm_ = (das);                   \
+  size_t _index_ = da_find(*_das_cwm_, id, predicate); \
+  da_slice_chop_left(_das_cwm_, _index_);              \
 })
 
 /**
