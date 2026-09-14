@@ -39,12 +39,12 @@ void *rc__manage(void *(*alloc)(size_t size), void (*free)(void *data), void *da
 void *rc__acquire(void *data);
 #define rc_acquire(data) ((__typeof__(data))rc__acquire((data)))
 void rc__acquire_all(void *items[], size_t count);
-#define rc_acquire_all(...) rc__acquire_all((void *[]){__VA_ARGS__}, sizeof((void *[]){__VA_ARGS__}) / sizeof(void *))
+#define rc_acquire_all(...) IF_VA_OPT(rc__acquire_all((void *[]){__VA_ARGS__}, sizeof((void *[]){__VA_ARGS__}) / sizeof(void *)), NOOP(), __VA_ARGS__)
 void *rc__move(void *data);
 #define rc_move(data) ((__typeof__(data))rc__move((data)))
 void rc_release(void *data);
 void rc__release_all(void *items[], size_t count);
-#define rc_release_all(...) rc__release_all((void *[]){__VA_ARGS__}, sizeof((void *[]){__VA_ARGS__}) / sizeof(void *))
+#define rc_release_all(...) IF_VA_OPT(rc__release_all((void *[]){__VA_ARGS__}, sizeof((void *[]){__VA_ARGS__}) / sizeof(void *)), NOOP(), __VA_ARGS__)
 #define rc__guarded(items, size) for (bool _run = (rc__acquire_all(items, size), true); _run; (_run = false, rc__release_all(items, size)))
 #define rc_guarded(...) rc__guarded((void *[]){__VA_ARGS__}, sizeof((void *[]){__VA_ARGS__}) / sizeof(void *))
 
