@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "ms-vscode.cpptools",
+  "files.associations": {
+    "*.syx": "lisp"
+  },
+  "workbench.diffEditorAssociations": {
+    "*.md": "default"
+  }
+}
