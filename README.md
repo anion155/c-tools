@@ -87,7 +87,7 @@ clang -x c -std=gnu23 -c sb.h -DSB_IMPL -o sb.o
 
 ## Dynamic arrays
 
-[da.h](./da.h) provides typed dynamic arrays without requiring a separate element type declaration.
+[da.h](./da.h) provides typed dynamic arrays utilities (heavily inspired by [@tsoding's dynamic arrays](https://www.youtube.com/@TsodingDaily) and his [nob.h](https://github.com/tsoding/nob.h)).
 
 ```c
 #include "da.h"
@@ -108,21 +108,40 @@ int main(void) {
 }
 ```
 
+Structure creation helpers:
+- [`Da(Value_Type, [struct_name])`](./da.h#L15 "Da") - represents array that can grow dynamically, owns data, and requires freeing after use.
+- [`Da_Slice(Value_Type, [struct_name])`](./da.h#L22 "Da_Slice") - represents slice of an array, does not own data.
+- [`Da_Const(Value_Type, [struct_name])`](./da.h#L28 "Da_Const") - represents constant size array compatible with da_any_ methods
+
 Useful operations include:
 
-- `da_append`
-- `da_append_many`
-- `da_append_many_n`
-- `da_reserve`
-- `da_resize`
-- `da_pop`
-- `da_at`
-- `da_first`
-- `da_last`
-- `da_slice`
-- `da_foreach`
-- `da_remove_unordered`
-- `da_free`
+- [`da_any_first(da)`](./da.h#L34): Returns the first element of the dynamic array. Asserts `count > 0`.
+- [`da_any_last(da)`](./da.h#L40): Returns the last element of the dynamic array. Asserts `count > 0`.
+- [`da_any_at(da, index)`](./da.h#L46): Returns the element at `index`. Asserts `index < count`.
+- [`da_any_foreach(da, id)`](./da.h#L52): Iterates over `da`, creating a pointer loop variable named `id` and index `id##_index`.
+- [`da_any_find_macro(da, id, predicate)`](./da.h#L57): Returns index of first element satisfying `predicate` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or array's size if not found.
+- [`da_any_find_right_macro(da, id, predicate)`](./da.h#L74): Returns `index + 1` of first element from the end satisfying `predicate` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or `0` if not found.
+- [`da_free(da)`](./da.h#L96): Frees `data` buffer, zeroes `capacity` and `count`, and resets pointer to `NULL`.
+- [`da_reserve(da, target_capacity)`](./da.h#L106): Ensures capacity is at least `target_capacity` by doubling capacity geometrically.
+- [`da_reserve_exact(da, target_capacity)`](./da.h#L117): Reallocates capacity to exactly `target_capacity` if needed without geometric growth.
+- [`da_trim_realloc(da)`](./da.h#L127): Shrinks memory allocation so `capacity` matches `count`, or frees if `count == 0`.
+- [`da_resize(da, new_size)`](./da.h#L141): Reserves memory for `new_size` and sets `count = new_size`.
+- [`da_append(da, item)`](./da.h#L147): Appends a single `item` to the dynamic array, growing capacity if necessary.
+- [`da_append_many_n(da, new_items, new_count)`](./da.h#L155): Appends `new_count` elements from buffer `new_items`.
+- [`da_append_many(da, [item1, item2, ...])`](./da.h#L163): Appends variadic literal items to `da`.
+- [`da_pop(da)`](./da.h#L173): Returns the last element and decrements `count`.
+- [`da_remove_unordered(da, index)`](./da.h#L180): Removes element at `index` by swapping it with the last element.
+- [`da_slice_init(da, [start], [count])`](./da.h#L187): Struct initializer expression for slices with optional `start` (default `0`) and `count` (defaults to remaining elements).
+- [`da_slice(da, Slice_Type, [start], [count])`](./da.h#L189): Returns a slice of `Slice_Type` starting at `start` (default `0`) for `count` elements (default remaining elements).
+- [`da_slice_whole(da, Slice_Type)`](./da.h#L200): Creates a `Slice_Type` spanning the full range of `da`.
+- [`da_slice_shift(das)`](./da.h#L205): Shifts slice head forward by 1, decrements `count`, and returns the dropped first element.
+- [`da_slice_chop_left(das, [n])`](./da.h#L213): Advances slice head past `n` elements (default `1`) and returns a new slice containing the chopped prefix.
+- [`da_slice_chop_right(das, [n])`](./da.h#L222): Shrinks slice tail by `n` elements (default `1`) and returns a new slice containing the chopped suffix.
+- [`da_slice_chop_while_macro(das, id, predicate)`](./da.h#L231): Chops and returns prefix of a slice while elements satisfy `predicate` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_right_while_macro(das, id, predicate)`](./da.h#L237): Chops and returns suffix of a slice while elements satisfy `predicate` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_by_macro(das, id, predicate)`](./da.h#L243): Chops slice up to (and including) the first element matching `predicate` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_right_by_macro(das, id, predicate)`](./da.h#L259): Chops slice from the end up to (and including) the last element matching `predicate` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_const_init_from_arraylit(Value_Type, [item1, item2, ...])`](./da.h#L275): Constructs a read-only dynamic array compatible structure initialized from a compound literal array.
 
 The default initial capacity is `256` and can be overridden with `DA_INIT_CAP`.
 
