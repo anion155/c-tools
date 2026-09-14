@@ -87,7 +87,7 @@ clang -x c -std=gnu23 -c sb.h -DSB_IMPL -o sb.o
 
 ## Dynamic arrays
 
-[da.h](./da.h) provides typed dynamic arrays utilities (heavily inspired by [@tsoding's dynamic arrays](https://www.youtube.com/@TsodingDaily) and his [nob.h](https://github.com/tsoding/nob.h)).
+[da.h](./da.h) provides typed dynamic arrays utilities (heavily inspired by [@tsoding's](https://www.youtube.com/@TsodingDaily) dynamic arrays and his [nob.h](https://github.com/tsoding/nob.h)).
 
 ```c
 #include "da.h"
@@ -115,40 +115,40 @@ Structure creation helpers:
 
 Useful operations include:
 
-- [`da_first(da)`](./da.h#L59): Returns the first element of the dynamic array.
-- [`da_last(da)`](./da.h#L68): Returns the last element of the dynamic array.
-- [`da_at(da, index)`](./da.h#L77): Returns the element at `index`.
-- [`da_foreach(da, id)`](./da.h#L87): Iterates over `da`, creating a pointer loop variable named `id` and index `id##_index`.
-- [`da_find_expr(da, id, expr)`](./da.h#L102): Returns index of first element satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or array's size if not found.
-- [`da_find_pred(da, predicate)`](./da.h#L125): Returns index of first element satisfying `predicate` (function or macro that accepts size_t index and Value_Type item), or array's size if not found.
-- [`da_find_right_expr(da, id, expr)`](./da.h#L145): Returns `index + 1` of first element from the end satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or `0` if not found.
-- [`da_find_right_pred(da, predicate)`](./da.h#L168): Returns `index + 1` of first element from the end satisfying `predicate` (function or macro that accepts size_t index and Value_Type item), or `0` if not found.
-- [`da_free(da)`](./da.h#L188): Frees `data` buffer, zeroes `capacity` and `count`, and resets pointer to `NULL`.
-- [`da_reserve(da, target_capacity)`](./da.h#L201): Ensures capacity is at least `target_capacity` by doubling capacity geometrically.
-- [`da_reserve_exact(da, target_capacity)`](./da.h#L215): Reallocates capacity to exactly `target_capacity` if needed without geometric growth.
-- [`da_trim_realloc(da)`](./da.h#L228): Shrinks memory allocation so `capacity` matches `count`, or frees if `count == 0`.
-- [`da_resize(da, new_size)`](./da.h#L245): Reserves memory for `new_size` and sets `count = new_size`.
-- [`da_append(da, item)`](./da.h#L253): Appends a single `item` to the dynamic array, growing capacity if necessary.
-- [`da_append_many_n(da, new_items, new_count)`](./da.h#L264): Appends `new_count` elements from buffer `new_items`.
-- [`da_append_many(da, [item1, item2, ...])`](./da.h#L276): Appends variadic literal items to `da`.
-- [`da_pop(da)`](./da.h#L289): Returns the last element and decrements `count`.
-- [`da_remove_unordered(da, index)`](./da.h#L299): Removes element at `index` by swapping it with the last element.
-- [`da_remove_ordered(da, index)`](./da.h#L309): Removes element at `index` by moving all further elements left.
-- [`da_slice_init(da, [start], [count])`](./da.h#L318): Struct initializer expression for slices, with optional `start` (default `0`) and `count` (defaults to remaining elements).
-- [`da_slice(da, Slice_Type, [start], [count])`](./da.h#L323): Returns a slice of `Slice_Type` starting at `start` (default `0`) for `count` elements (default remaining elements).
-- [`da_slice_whole(da, Slice_Type)`](./da.h#L337): Creates a `Slice_Type` putting in it full range of `da`.
-- [`da_slice_shift(das)`](./da.h#L345): Shifts slice head forward by 1, decrements `count`, and returns the dropped first element.
-- [`da_slice_chop_left(das, [n])`](./da.h#L356): Advances slice head past `n` elements (default `1`) and returns a new slice containing the chopped prefix.
-- [`da_slice_chop_right(das, [n])`](./da.h#L368): Shrinks slice tail by `n` elements (default `1`) and returns a new slice containing the chopped suffix.
-- [`da_slice_chop_while_expr(das, id, expr)`](./da.h#L387): Chops and returns prefix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
-- [`da_slice_chop_while_pred(das, predicate)`](./da.h#L396): Chops and returns prefix of a slice while elements satisfy `predicate` (function or macro that accepts size_t index and Value_Type item).
-- [`da_slice_chop_right_while_expr(das, id, expr)`](./da.h#L410): Chops and returns suffix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
-- [`da_slice_chop_right_while_pred(das, predicate)`](./da.h#L419): Chops and returns suffix of a slice while elements satisfy `predicate` (function or macro that accepts size_t index and Value_Type item).
-- [`da_slice_chop_by_delim_expr(das, id, expr)`](./da.h#L432): Chops slice up to (and including) the first element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
-- [`da_slice_chop_by_pred(das, predicate)`](./da.h#L450): Chops slice up to (and including) the first element matching `predicate` (function or macro that accepts size_t index and Value_Type item).
-- [`da_slice_chop_right_by_delim_expr(das, id, expr)`](./da.h#L471): Chops slice from the end up to (and including) the last element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
-- [`da_slice_chop_right_by_pred(das, predicate)`](./da.h#L490): Chops slice from the end up to (and including) the last element matching `predicate` (function or macro that accepts size_t index and Value_Type item).
-- [`da_const_init_from_arraylit(Value_Type, [item1, item2, ...])`](./da.h#L508): Constructs a read-only dynamic array compatible structure initialized from a compound literal array.
+- [`da_first(da)`](./da.h#L69): Returns the first element of the dynamic array.
+- [`da_last(da)`](./da.h#L78): Returns the last element of the dynamic array.
+- [`da_at(da, index)`](./da.h#L87): Returns the element at `index`.
+- [`da_foreach(da, id)`](./da.h#L97): Iterates over `da`, creating a pointer loop variable named `id` and index `id##_index`.
+- [`da_find_expr(da, id, expr)`](./da.h#L112): Returns index of first element satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or array's size if not found.
+- [`da_find_pred(da, predicate)`](./da.h#L135): Returns index of first element satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or array's size if not found.
+- [`da_find_right_expr(da, id, expr)`](./da.h#L155): Returns `index + 1` of first element from the end satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or `0` if not found.
+- [`da_find_right_pred(da, predicate)`](./da.h#L178): Returns `index + 1` of first element from the end satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or `0` if not found.
+- [`da_free(da)`](./da.h#L196): Frees `data` buffer, zeroes `capacity` and `count`, and resets pointer to `NULL`.
+- [`da_reserve(da, target_capacity)`](./da.h#L209): Ensures capacity is at least `target_capacity` by doubling capacity geometrically.
+- [`da_reserve_exact(da, target_capacity)`](./da.h#L223): Reallocates capacity to exactly `target_capacity` if needed without geometric growth.
+- [`da_trim_realloc(da)`](./da.h#L236): Shrinks memory allocation so `capacity` matches `count`, or frees if `count == 0`.
+- [`da_resize(da, new_size)`](./da.h#L253): Reserves memory for `new_size` and sets `count = new_size`.
+- [`da_append(da, item)`](./da.h#L261): Appends a single `item` to the dynamic array, growing capacity if necessary.
+- [`da_append_many_n(da, new_items, new_count)`](./da.h#L272): Appends `new_count` elements from buffer `new_items`.
+- [`da_append_many(da, [item1, item2, ...])`](./da.h#L284): Appends variadic literal items to `da`.
+- [`da_pop(da)`](./da.h#L297): Returns the last element and decrements `count`.
+- [`da_remove_unordered(da, index)`](./da.h#L307): Removes element at `index` by swapping it with the last element.
+- [`da_remove_ordered(da, index)`](./da.h#L317): Removes element at `index` by moving all further elements left.
+- [`da_slice_init(da, [start], [count])`](./da.h#L326): Struct initializer expression for slices, with optional `start` (default `0`) and `count` (defaults to remaining elements).
+- [`da_slice(da, Slice_Type, [start], [count])`](./da.h#L331): Returns a slice of `Slice_Type` starting at `start` (default `0`) for `count` elements (default remaining elements).
+- [`da_slice_whole(da, Slice_Type)`](./da.h#L345): Creates a `Slice_Type` putting in it full range of `da`.
+- [`da_slice_shift(das)`](./da.h#L353): Shifts slice head forward by 1, decrements `count`, and returns the dropped first element.
+- [`da_slice_chop_left(das, [n])`](./da.h#L364): Advances slice head past `n` elements (default `1`) and returns a new slice containing the chopped prefix.
+- [`da_slice_chop_right(das, [n])`](./da.h#L376): Shrinks slice tail by `n` elements (default `1`) and returns a new slice containing the chopped suffix.
+- [`da_slice_chop_while_expr(das, id, expr)`](./da.h#L395): Chops and returns prefix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_while_pred(das, predicate)`](./da.h#L404): Chops and returns prefix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
+- [`da_slice_chop_right_while_expr(das, id, expr)`](./da.h#L418): Chops and returns suffix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_right_while_pred(das, predicate)`](./da.h#L427): Chops and returns suffix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
+- [`da_slice_chop_by_delim_expr(das, id, expr)`](./da.h#L440): Chops slice up to the first element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_by_delim_pred(das, predicate)`](./da.h#L458): Chops slice up to the first element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_right_by_delim_expr(das, id, expr)`](./da.h#L479): Chops slice from the end up to the last element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_right_by_delim_pred(das, predicate)`](./da.h#L498): Chops slice from the end up to the last element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
+- [`da_const_init_from_arraylit(Value_Type, [item1, item2, ...])`](./da.h#L506): Constructs a read-only dynamic array compatible structure initialized from a compound literal array.
 
 The default initial capacity is `256` and can be overridden with `DA_INIT_CAP`.
 
