@@ -5,7 +5,6 @@
  *
  * ## Usage example
  * ```c
-   #define DA_IMPL
    #include "da.h"
 
    typedef Da(int, Int_Array) Int_Array;
@@ -117,9 +116,9 @@
       for (typeof(*_da_##id->data) *id = _da_##id->data; id##_index < count; id += 1, id##_index += 1)
 
 /**
- * Returns index of first element satisfying `predicate`, or array's size if not found.
- * `predicate` - is supposed to be an expression returning implicitly convertable to `bool` value.
- * Available variables while in predicate:
+ * Returns index of first element satisfying `expr`, or array's size if not found.
+ * `expr` - is supposed to be an expression returning implicitly convertable to `bool` value.
+ * Available variables while in expr:
  * - `id` - pointer to item,
  * - `id##_index` - current index,
  * - `id##_data` - pointer to start of the array,
@@ -127,7 +126,7 @@
  *
  * Can be used with any da compatible structures.
  */
-#define da_find(da, id, predicate) ({                      \
+#define da_find_expr(da, id, expr) ({                      \
   typeof((da)) *_da_fm_ = &(da);                           \
   const typeof(*_da_fm_->data) *id##_data = _da_fm_->data; \
   UNUSED(id##_data);                                       \
@@ -138,7 +137,7 @@
   size_t id##_index = 0;                                   \
   while (id##_index < id##_count) {                        \
     id = &id##_data[id##_index];                           \
-    if (!(predicate)) break;                               \
+    if (!(expr)) break;                                    \
     id##_index += 1;                                       \
   }                                                        \
   id##_index;                                              \
@@ -149,7 +148,7 @@
  * `predicate` - is function or macro that accepts (size_t index, Value_Type item).
  * Can be used with any da compatible structures.
  */
-#define da_find_macro(da, predicate) ({                       \
+#define da_find_pred(da, predicate) ({                        \
   typeof((da)) *_da_fm_ = &(da);                              \
   size_t _index_ = 0;                                         \
   while (_index_ < _da_fm_->count) {                          \
@@ -160,9 +159,9 @@
 })
 
 /**
- * Returns `index + 1` of first element from the end satisfying `predicate`, or `0` if not found.
- * `predicate` - is supposed to be an expression returning implicitly convertable to `bool` value.
- * Available variables while in predicate:
+ * Returns `index + 1` of first element from the end satisfying `expr`, or `0` if not found.
+ * `expr` - is supposed to be an expression returning implicitly convertable to `bool` value.
+ * Available variables while in expr:
  * - `id` - pointer to item,
  * - `id##_index` - current index,
  * - `id##_data` - pointer to start of the array,
@@ -170,7 +169,7 @@
  *
  * Can be used with any da compatible structures.
  */
-#define da_find_right(da, id, predicate) ({                  \
+#define da_find_right_expr(da, id, expr) ({                  \
   typeof((da)) *_da_fmr_ = &(da);                            \
   const typeof(*_da_fmr_->data) *id##_data = _da_fmr_->data; \
   UNUSED(id##_data);                                         \
@@ -181,7 +180,7 @@
   ssize_t id##_index = id##_count;                           \
   while (id##_index > 0) {                                   \
     id = &id##_data[id##_index - 1];                         \
-    if (!(predicate)) break;                                 \
+    if (!(expr)) break;                                      \
     id##_index -= 1;                                         \
   }                                                          \
   id##_index;                                                \
@@ -192,7 +191,7 @@
  * `predicate` - is function or macro that accepts (size_t index, Value_Type item).
  * Can be used with any da compatible structures.
  */
-#define da_find_right_macro(da, predicate) ({                 \
+#define da_find_right_pred(da, predicate) ({                  \
   typeof((da)) *_da_fmr_ = &(da);                             \
   ssize_t _index_ = id##_count;                               \
   while (_index_ > 0) {                                       \
@@ -407,17 +406,17 @@
 })
 
 /**
- * Chops and returns prefix of a slice while elements satisfy `predicate`.
- * `predicate` - is supposed to be an expression returning implicitly convertable to `bool` value.
- * Available variables while in predicate:
+ * Chops and returns prefix of a slice while elements satisfy `expr`.
+ * `expr` - is supposed to be an expression returning implicitly convertable to `bool` value.
+ * Available variables while in expr:
  * - `id` - pointer to item,
  * - `id##_index` - current index,
  * - `id##_data` - pointer to start of the array,
  * - `id##_count` - count of the array.
  */
-#define da_slice_chop_while(das, id, predicate) ({     \
+#define da_slice_chop_while_expr(das, id, expr) ({     \
   typeof(*(das)) *_das_cwm_ = (das);                   \
-  size_t _index_ = da_find(*_das_cwm_, id, predicate); \
+  size_t _index_ = da_find_expr(*_das_cwm_, id, expr); \
   da_slice_chop_left(_das_cwm_, _index_);              \
 })
 
@@ -425,24 +424,24 @@
  * Chops and returns prefix of a slice while elements satisfy `predicate`.
  * `predicate` - is function or macro that accepts (size_t index, Value_Type item).
  */
-#define da_slice_chop_while_macro(das, predicate) ({     \
-  typeof(*(das)) *_das_cwm_ = (das);                     \
-  size_t _index_ = da_find_macro(*_das_cwm_, predicate); \
-  da_slice_chop_left(_das_cwm_, _index_);                \
+#define da_slice_chop_while_pred(das, predicate) ({     \
+  typeof(*(das)) *_das_cwm_ = (das);                    \
+  size_t _index_ = da_find_pred(*_das_cwm_, predicate); \
+  da_slice_chop_left(_das_cwm_, _index_);               \
 })
 
 /**
- * Chops and returns suffix of a slice while elements satisfy `predicate`.
- * `predicate` - is supposed to be an expression returning implicitly convertable to `bool` value.
- * Available variables while in predicate:
+ * Chops and returns suffix of a slice while elements satisfy `expr`.
+ * `expr` - is supposed to be an expression returning implicitly convertable to `bool` value.
+ * Available variables while in expr:
  * - `id` - pointer to item,
  * - `id##_index` - current index,
  * - `id##_data` - pointer to start of the array,
  * - `id##_count` - count of the array.
  */
-#define da_slice_chop_right_while(das, id, predicate) ({        \
+#define da_slice_chop_right_while_expr(das, id, expr) ({        \
   typeof(*(das)) *_das_crwm_ = (das);                           \
-  size_t _index_ = da_find_right(*_das_crwm_, id, (predicate)); \
+  size_t _index_ = da_find_right_expr(*_das_crwm_, id, (expr)); \
   da_slice_chop_right(_das_crwm_, _das_crwm_->count - _index_); \
 })
 
@@ -450,24 +449,24 @@
  * Chops and returns suffix of a slice while elements satisfy `predicate`.
  * `predicate` - is function or macro that accepts (size_t index, Value_Type item).
  */
-#define da_slice_chop_right_while_macro(das, predicate) ({      \
+#define da_slice_chop_right_while_pred(das, predicate) ({       \
   typeof(*(das)) *_das_crwm_ = (das);                           \
-  size_t _index_ = da_find_right_macro(*_das_crwm_, predicate); \
+  size_t _index_ = da_find_right_pred(*_das_crwm_, predicate);  \
   da_slice_chop_right(_das_crwm_, _das_crwm_->count - _index_); \
 })
 
 /**
- * Chops slice up to (and including) the first element matching `predicate`.
- * `predicate` - is supposed to be an expression returning implicitly convertable to `bool` value.
- * Available variables while in predicate:
+ * Chops slice up to (and including) the first element matching `expr`.
+ * `expr` - is supposed to be an expression returning implicitly convertable to `bool` value.
+ * Available variables while in expr:
  * - `id` - pointer to item,
  * - `id##_index` - current index,
  * - `id##_data` - pointer to start of the array,
  * - `id##_count` - count of the array.
  */
-#define da_slice_chop_by(das, id, predicate) ({           \
+#define da_slice_chop_by_delim_expr(das, id, expr) ({     \
   typeof(*(das)) *_das_cbm_ = (das);                      \
-  size_t _index_ = da_find(*_das_cbm_, id, !(predicate)); \
+  size_t _index_ = da_find_expr(*_das_cbm_, id, !(expr)); \
   typeof(*(das)) _head_;                                  \
   if (_index_ >= _das_cbm_->count) {                      \
     _head_.data = _das_cbm_->data;                        \
@@ -484,33 +483,33 @@
  * Chops slice up to (and including) the first element matching `predicate`.
  * `predicate` - is function or macro that accepts (size_t index, Value_Type item).
  */
-#define da_slice_chop_by_macro(das, predicate) ({                           \
-  typeof(*(das)) *_das_cbm_ = (das);                                        \
-  size_t _index_ = da_find(*_das_cbm_, _id_, !predicate(_id_, _id__index)); \
-  typeof(*(das)) _head_;                                                    \
-  if (_index_ >= _das_cbm_->count) {                                        \
-    _head_.data = _das_cbm_->data;                                          \
-    _head_.count = 0;                                                       \
-    _das_cbm_->data += _das_cbm_->count;                                    \
-    _das_cbm_->count = 0;                                                   \
-  } else {                                                                  \
-    _head_ = da_slice_chop_left(_das_cbm_, _index_ + 1);                    \
-  }                                                                         \
-  _head_;                                                                   \
+#define da_slice_chop_by_pred(das, predicate) ({                                 \
+  typeof(*(das)) *_das_cbm_ = (das);                                             \
+  size_t _index_ = da_find_expr(*_das_cbm_, _id_, !predicate(_id_, _id__index)); \
+  typeof(*(das)) _head_;                                                         \
+  if (_index_ >= _das_cbm_->count) {                                             \
+    _head_.data = _das_cbm_->data;                                               \
+    _head_.count = 0;                                                            \
+    _das_cbm_->data += _das_cbm_->count;                                         \
+    _das_cbm_->count = 0;                                                        \
+  } else {                                                                       \
+    _head_ = da_slice_chop_left(_das_cbm_, _index_ + 1);                         \
+  }                                                                              \
+  _head_;                                                                        \
 })
 
 /**
- * Chops slice from the end up to (and including) the last element matching `predicate`
- * `predicate` - is supposed to be an expression returning implicitly convertable to `bool` value.
- * Available variables while in predicate:
+ * Chops slice from the end up to (and including) the last element matching `expr`
+ * `expr` - is supposed to be an expression returning implicitly convertable to `bool` value.
+ * Available variables while in expr:
  * - `id` - pointer to item,
  * - `id##_index` - current index,
  * - `id##_data` - pointer to start of the array,
  * - `id##_count` - count of the array.
  */
-#define da_slice_chop_right_by(das, id, predicate) ({                          \
+#define da_slice_chop_right_by_delim_expr(das, id, expr) ({                    \
   typeof(*(das)) *_das_crbm_ = (das);                                          \
-  size_t _index_ = da_find_right(*_das_crbm_, id, !(predicate));               \
+  size_t _index_ = da_find_right_expr(*_das_crbm_, id, !(expr));               \
   typeof(*(das)) _tail_;                                                       \
   if (_index_ == 0) {                                                          \
     _tail_.data = _das_crbm_->data;                                            \
@@ -527,19 +526,19 @@
  * Chops slice from the end up to (and including) the last element matching `predicate`
  * `predicate` - is function or macro that accepts (size_t index, Value_Type item).
  */
-#define da_slice_chop_right_by_macro(das, predicate) ({                            \
-  typeof(*(das)) *_das_crbm_ = (das);                                              \
-  size_t _index_ = da_find_right(*_das_crbm_, _id_, !predicate(_id_, _id__index)); \
-  typeof(*(das)) _tail_;                                                           \
-  if (_index_ == 0) {                                                              \
-    _tail_.data = _das_crbm_->data;                                                \
-    _tail_.count = 0;                                                              \
-    _das_crbm_->data += _das_crbm_->count;                                         \
-    _das_crbm_->count = 0;                                                         \
-  } else {                                                                         \
-    _tail_ = da_slice_chop_right(_das_crbm_, _das_crbm_->count - _index_ + 1);     \
-  }                                                                                \
-  _tail_;                                                                          \
+#define da_slice_chop_right_by_pred(das, predicate) ({                                  \
+  typeof(*(das)) *_das_crbm_ = (das);                                                   \
+  size_t _index_ = da_find_right_expr(*_das_crbm_, _id_, !predicate(_id_, _id__index)); \
+  typeof(*(das)) _tail_;                                                                \
+  if (_index_ == 0) {                                                                   \
+    _tail_.data = _das_crbm_->data;                                                     \
+    _tail_.count = 0;                                                                   \
+    _das_crbm_->data += _das_crbm_->count;                                              \
+    _das_crbm_->count = 0;                                                              \
+  } else {                                                                              \
+    _tail_ = da_slice_chop_right(_das_crbm_, _das_crbm_->count - _index_ + 1);          \
+  }                                                                                     \
+  _tail_;                                                                               \
 })
 
 /**
