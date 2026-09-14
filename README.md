@@ -1,6 +1,6 @@
 # c-tools
 
-A collection of small, dependency-free C utilities implemented primarily as single-header libraries.
+A collection of small, dependency-free C utilities implemented primarily as std-styled single-header libraries.
 
 The project provides typed dynamic arrays, string builders and views, UTF-8 helpers, reference-counted memory, random ID generation, floating-point conversion utilities, and common preprocessor helpers.
 
@@ -8,29 +8,26 @@ The project provides typed dynamic arrays, string builders and views, UTF-8 help
 
 - `da.h` Typed dynamic arrays and slices
 - `sb.h` String builders and non-owning string views
-- `` UTF-8 character-length lookup
-- Reference-counted and weak references
+- `utf.h` UTF-8 character-length lookup
+- `rc.h` Reference-counted and weak references
 - `nanoid`-style random identifiers
-- Floating-point representation and conversion helpers
-- Ryu floating-point formatting support
-- Assertion, panic, and preprocessor utilities
+- `floats.h` Floating-point representation and conversion helpers
+- `ryu.h` Ryu floating-point formatting support
+- `abort.h` Assertion, panic, and preprocessor utilities
 
 ## Requirements
 
 The headers use GNU C extensions and modern C features, including:
 
-- `typeof`
-- statement expressions
-- `_Generic`
-- `__VA_OPT__`
-- `__uint128_t` on supported platforms
-- C23 attributes such as `[[noreturn]]`
+- C23
+- GNU statement expressions
+- 128 bit supported platform
 
 Clang or GCC with GNU C extensions enabled is recommended.
 
 ## Usage
 
-Most headers separate declarations from implementation. Include the header normally wherever it is needed, and define its implementation macro in exactly one translation unit.
+Most headers separate declarations from implementation. Include the header normally wherever it is needed, and define its implementation macro in a translation unit.
 
 For example:
 
@@ -58,8 +55,34 @@ int main(void) {
 Compile with:
 
 ```c
-clang -std=gnu2x -Wall -Wextra -I. main.c -o example
+clang -std=gnu23 main.c -o example
 ./example
+```
+
+Additionally to std-style headers have implementation guard as well, and can be safely included multiple times in one translation unit.
+
+```c
+// other.c
+#define SB_IMPL
+#include "sb.h"
+
+// main.c
+#define SB_IMPL
+#include "sb.h"
+
+int main(void) {
+  ...
+}
+
+#include "other.c"
+```
+
+As with stb it is adviced to never include implementation more than once in different translation units (different *.c files compiled to separate *.o), as there is no way to prevent duplications this way.
+
+Can be easily precompiled to separate object file if you need it.
+
+```
+clang -x c -std=gnu23 -c sb.h -DSB_IMPL -o sb.o
 ```
 
 ## Dynamic arrays
