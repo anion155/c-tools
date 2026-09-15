@@ -24,7 +24,6 @@
  * - C23
  * - GNU statement expressions
  * - [str.h](./str.h)
- * - [da.h](./da.h)
  * - [defines.h](./defines.h)
  */
 

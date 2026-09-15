@@ -4,6 +4,8 @@
 #include "str.h"
 #define STR_UTF_IMPL
 #include "str_utf.h"
+#define STR_INTEGER_IMPL
+#include "str_integer.h"
 
 int main(void) {
   String_Builder sb = {0};
