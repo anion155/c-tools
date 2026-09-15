@@ -7,6 +7,10 @@
 #include "str_utf.h"
 #define STR_NUMBERS_IMPL
 #include "str_numbers.h"
+#define ABORT_IMPL
+#include "abort.h"
+#define RC_IMPL
+#include "rc.h"
 
 int main(void) {
   String_Builder sb = {0};

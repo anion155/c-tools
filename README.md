@@ -112,52 +112,53 @@ int main(void) {
 ```
 
 Structure creation helpers:
-- [`Da(Value_Type, [struct_name])`](./da.h#L44): represents array that can grow dynamically, owns data, and requires freeing after use.
-- [`Da_Slice(Value_Type, [struct_name])`](./da.h#L54): represents slice of an array, does not own data.
-- [`Da_Const(Value_Type, [struct_name])`](./da.h#L63): represents constant size array compatible with da_any_ methods
+
+- [`Da(Value_Type, [struct_name])`](./da.h#L51): represents array that can grow dynamically, owns data, and requires freeing after use.
+- [`Da_Slice(Value_Type, [struct_name])`](./da.h#L62): represents slice of an array, does not own data.
+- [`Da_Const(Value_Type, [struct_name])`](./da.h#L72): represents constant size array compatible with da_any_ methods
 
 Useful operations include:
 
-- [`da_first(da)`](./da.h#L73): Returns the first element of the dynamic array.
-- [`da_last(da)`](./da.h#L82): Returns the last element of the dynamic array.
-- [`da_at(da, index)`](./da.h#L91): Returns the element at `index`.
-- [`da_foreach(da, id)`](./da.h#L101): Iterates over `da`, creating a pointer loop variable named `id` and index `id##_index`.
-- [`da_find_expr(da, id, expr)`](./da.h#L116): Returns index of first element satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or array's size if not found.
-- [`da_find_pred(da, predicate)`](./da.h#L139): Returns index of first element satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or array's size if not found.
-- [`da_find_right_expr(da, id, expr)`](./da.h#L159): Returns `index + 1` of first element from the end satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or `0` if not found.
-- [`da_find_right_pred(da, predicate)`](./da.h#L182): Returns `index + 1` of first element from the end satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or `0` if not found.
-- [`da_free(da)`](./da.h#L201): Frees `data` buffer, zeroes `capacity` and `count`, and resets pointer to `NULL`.
-- [`da_reserve(da, target_capacity)`](./da.h#L214): Ensures capacity is at least `target_capacity` by doubling capacity geometrically.
-- [`da_reserve_exact(da, target_capacity)`](./da.h#L228): Reallocates capacity to exactly `target_capacity` if needed without geometric growth.
-- [`da_trim_realloc(da)`](./da.h#L241): Shrinks memory allocation so `capacity` matches `count`, or frees if `count == 0`.
-- [`da_resize(da, new_size)`](./da.h#L258): Reserves memory for `new_size` and sets `count = new_size`.
-- [`da_append(da, item)`](./da.h#L266): Appends a single `item` to the dynamic array, growing capacity if necessary.
-- [`da_append_many_n(da, new_items, new_count)`](./da.h#L277): Appends `new_count` elements from buffer `new_items`.
-- [`da_append_many(da, [item1, item2, ...])`](./da.h#L289): Appends variadic literal items to `da`.
-- [`da_pop(da)`](./da.h#L302): Returns the last element and decrements `count`.
-- [`da_remove_unordered(da, index)`](./da.h#L312): Removes element at `index` by swapping it with the last element.
-- [`da_remove_ordered(da, index)`](./da.h#L322): Removes element at `index` by moving all further elements left.
+- [`da_first(da)`](./da.h#L82): Returns the first element of the dynamic array.
+- [`da_last(da)`](./da.h#L92): Returns the last element of the dynamic array.
+- [`da_at(da, index)`](./da.h#L102): Returns the element at `index`.
+- [`da_foreach(da, id)`](./da.h#L113): Iterates over `da`, creating a pointer loop variable named `id` and index `id##_index`.
+- [`da_find_expr(da, id, expr)`](./da.h#L129): Returns index of first element satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or array's size if not found.
+- [`da_find_pred(da, predicate)`](./da.h#L151): Returns index of first element satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or array's size if not found.
+- [`da_find_right_expr(da, id, expr)`](./da.h#L172): Returns `index + 1` of first element from the end satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or `0` if not found.
+- [`da_find_right_pred(da, predicate)`](./da.h#L194): Returns `index + 1` of first element from the end satisfying `predicate` (function or macro that accepts (Value_Type *item, size_t index)), or `0` if not found.
+- [`da_free(da)`](./da.h#L215): Frees `data` buffer, zeroes `capacity` and `count`, and resets pointer to `NULL`.
+- [`da_reserve(da, target_capacity)`](./da.h#L228): Ensures capacity is at least `target_capacity` by doubling capacity geometrically.
+- [`da_reserve_exact(da, target_capacity)`](./da.h#L242): Reallocates capacity to exactly `target_capacity` if needed without geometric growth.
+- [`da_trim_realloc(da)`](./da.h#L255): Shrinks memory allocation so `capacity` matches `count`, or frees if `count == 0`.
+- [`da_resize(da, new_size)`](./da.h#L272): Reserves memory for `new_size` and sets `count = new_size`.
+- [`da_append(da, item)`](./da.h#L281): Appends a single `item` to the dynamic array, growing capacity if necessary.
+- [`da_append_many_n(da, new_items, new_count)`](./da.h#L292): Appends `new_count` elements from buffer `new_items`.
+- [`da_append_many(da, [item1, item2, ...])`](./da.h#L304): Appends variadic literal items to `da`.
+- [`da_pop(da)`](./da.h#L317): Returns the last element and decrements `count`.
+- [`da_remove_unordered(da, index)`](./da.h#L327): Removes element at `index` by swapping it with the last element.
+- [`da_remove_ordered(da, index)`](./da.h#L338): Removes element at `index` by moving all further elements left.
 
 Slice methods:
 
-- [`da_slice_init(da, [start], [count])`](./da.h#L331): Struct initializer expression for slices, with optional `start` (default `0`) and `count` (defaults to remaining elements).
-- [`da_slice(da, Slice_Type, [start], [count])`](./da.h#L336): Returns a slice of `Slice_Type` starting at `start` (default `0`) for `count` elements (default remaining elements).
-- [`da_slice_whole(da, Slice_Type)`](./da.h#L350): Creates a `Slice_Type` putting in it full range of `da`.
-- [`da_slice_shift(das)`](./da.h#L358): Shifts slice head forward by 1, decrements `count`, and returns the dropped first element.
-- [`da_slice_chop_left(das, [n])`](./da.h#L369): Advances slice head past `n` elements (default `1`) and returns a new slice containing the chopped prefix.
-- [`da_slice_chop_right(das, [n])`](./da.h#L381): Shrinks slice tail by `n` elements (default `1`) and returns a new slice containing the chopped suffix.
-- [`da_slice_chop_while_expr(das, id, expr)`](./da.h#L400): Chops and returns prefix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
-- [`da_slice_chop_while_pred(das, predicate)`](./da.h#L409): Chops and returns prefix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
-- [`da_slice_chop_right_while_expr(das, id, expr)`](./da.h#L423): Chops and returns suffix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
-- [`da_slice_chop_right_while_pred(das, predicate)`](./da.h#L432): Chops and returns suffix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
-- [`da_slice_chop_by_delim_expr(das, id, expr)`](./da.h#L445): Chops slice up to the first element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
-- [`da_slice_chop_by_delim_pred(das, predicate)`](./da.h#L466): Chops slice up to the first element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
-- [`da_slice_chop_right_by_delim_expr(das, id, expr)`](./da.h#L480): Chops slice from the end up to the last element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
-- [`da_slice_chop_right_by_delim_pred(das, predicate)`](./da.h#L501): Chops slice from the end up to the last element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_init(da, [start], [count])`](./da.h#L348): Struct initializer expression for slices, with optional `start` (default `0`) and `count` (defaults to remaining elements).
+- [`da_slice(da, Slice_Type, [start], [count])`](./da.h#L353): Returns a slice of `Slice_Type` starting at `start` (default `0`) for `count` elements (default remaining elements).
+- [`da_slice_whole(da, Slice_Type)`](./da.h#L367): Creates a `Slice_Type` putting in it full range of `da`.
+- [`da_slice_shift(das)`](./da.h#L375): Shifts slice head forward by 1, decrements `count`, and returns the dropped first element.
+- [`da_slice_chop_left(das, [n])`](./da.h#L386): Advances slice head past `n` elements (default `1`) and returns a new slice containing the chopped prefix.
+- [`da_slice_chop_right(das, [n])`](./da.h#L399): Shrinks slice tail by `n` elements (default `1`) and returns a new slice containing the chopped suffix.
+- [`da_slice_chop_while_expr(das, id, expr)`](./da.h#L417): Chops and returns prefix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_while_pred(das, predicate)`](./da.h#L427): Chops and returns prefix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
+- [`da_slice_chop_right_while_expr(das, id, expr)`](./da.h#L440): Chops and returns suffix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_right_while_pred(das, predicate)`](./da.h#L450): Chops and returns suffix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
+- [`da_slice_chop_by_delim_expr(das, id, expr)`](./da.h#L463): Chops slice up to the first element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_by_delim_pred(das, predicate)`](./da.h#L483): Chops slice up to the first element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_right_by_delim_expr(das, id, expr)`](./da.h#L496): Chops slice from the end up to the last element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_right_by_delim_pred(das, predicate)`](./da.h#L516): Chops slice from the end up to the last element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
 
 Const array methods:
 
-- [`da_const_init_from_arraylit(Value_Type, [item1, item2, ...])`](./da.h#L509): Constructs a read-only dynamic array compatible structure initialized from a compound literal array.
+- [`da_const_init_from_arraylit(Value_Type, [item1, item2, ...])`](./da.h#L523): Constructs a read-only dynamic array compatible structure initialized from a compound literal array.
 
 The default initial capacity is `256` and can be overridden with `DA_INIT_CAP`.
 
@@ -170,11 +171,11 @@ Then it decides which types actually repressents `f16_t`, `f80_t`, `f128_t`, `f6
 
 It defines constants:
 
-- `FLOATS_LD_KIND_F64 = 0`: is when `long double` is same as `double`
-- `FLOATS_LD_KIND_F80 = 1`: is when `long double` is IEEE 754 Extended Precision
-- `FLOATS_LD_KIND_F128 = 2`: is when `long double` is IEEE 754 Quadruple Precision
-- `FLOATS_LD_KIND_F64PAIR = 3`: is when `long double` is IBM double-double
-- `FLOATS_LD_KIND`: is actual detected type
+- [`FLOATS_LD_KIND_F64 = 0`](./floats.h#L40): is when `long double` is same as `double`
+- [`FLOATS_LD_KIND_F80 = 1`](./floats.h#L41): is when `long double` is IEEE 754 Extended Precision
+- [`FLOATS_LD_KIND_F128 = 2`](./floats.h#L42): is when `long double` is IEEE 754 Quadruple Precision
+- [`FLOATS_LD_KIND_F64PAIR = 3`](./floats.h#L43): is when `long double` is IBM double-double
+- [`FLOATS_LD_KIND`](./floats.h#L46): is actual detected type
 
 Example of usage:
 
@@ -192,27 +193,49 @@ Example of usage:
 #endif
 ```
 
-- `f16_canonical_t`: structure which has guaranteed size of 16 bits.
-- `f80_canonical_t`: structure which has guaranteed size of 80 bits.
-- `f128_canonical_t`: structure which has guaranteed size of 128 bits.
-- `f64pair_canonical_t`: structure which has guaranteed size of 128 bits but also can be parsed as two consequtive doubles.
+- [`f16_canonical_t`](./floats.h#L74): structure which has guaranteed size of 16 bits.
+- [`f80_canonical_t`](./floats.h#L77): structure which has guaranteed size of 80 bits.
+- [`f128_canonical_t`](./floats.h#L81): structure which has guaranteed size of 128 bits.
+- [`f64pair_canonical_t`](./floats.h#L88): structure which has guaranteed size of 128 bits but also can be parsed as two consequtive doubles.
 
-- `f16_t`: can be either native `_Float16` or `f16_canonical_t`
-- `f32_t`: is always native `float`
-- `f64_t`: is always native `double`
-- `f80_t`: can be either native `long double` or `f80_canonical_t`
-- `f128_t`: can be either native `long double` or `f128_canonical_t`
-- `f64pair_t`: can be either native `long double` or `f64pair_canonical_t`
+- [`f16_t`](./floats.h#L106): can be either native `_Float16` or `f16_canonical_t`
+- [`f32_t`](./floats.h#L110): is always native `float`
+- [`f64_t`](./floats.h#L111): is always native `double`
+- [`f80_t`](./floats.h#L113): can be either native `long double` or `f80_canonical_t`
+- [`f128_t`](./floats.h#L114): can be either native `long double` or `f128_canonical_t`
+- [`f64pair_t`](./floats.h#L115): can be either native `long double` or `f64pair_canonical_t`
+
+Conversion helpers (`_Generic` dispatch macros, each backed by explicit `_from_*`/`_to_*` functions) convert between `float`, `double`, `long double`, and the canonical types:
+
+- [`f16_canonical_from(value)`](./floats.h#L151): converts `value` (`float`, `double`, `long double`, `_Float16` when available, or any canonical type) into `f16_canonical_t`.
+- [`f16_canonical_to(value, type)`](./floats.h#L171): converts an `f16_canonical_t` `value` into the requested `type` (`float`, `double`, `long double`, `_Float16` when available, or any canonical type).
+- [`f80_canonical_from(value)`](./floats.h#L190): converts `value` into `f80_canonical_t`.
+- [`f80_canonical_to(value, type)`](./floats.h#L209): converts an `f80_canonical_t` `value` into the requested `type`.
+- [`f128_canonical_from(value)`](./floats.h#L228): converts `value` into `f128_canonical_t`.
+- [`f128_canonical_to(value, type)`](./floats.h#L247): converts an `f128_canonical_t` `value` into the requested `type`.
+- [`f64pair_canonical_from(value)`](./floats.h#L266): converts `value` into `f64pair_canonical_t`.
+- [`f64pair_canonical_to(value, type)`](./floats.h#L285): converts an `f64pair_canonical_t` `value` into the requested `type`.
+- [`f_canonical_to_native(value)`](./floats.h#L299): converts any native or canonical float `value` into its corresponding native type (`float`, `double`, or `long double`).
+- [`f_canonical_from_native(value, type)`](./floats.h#L308): converts a native float `value` into the requested `type` (native or canonical).
+
+Bit-pattern accessors:
+
+- [`f16_to_bits(value)`](./floats.h#L317): returns the raw 16-bit pattern of `value` as `uint16_t`.
+- [`f32_to_bits(value)`](./floats.h#L318): returns the raw 32-bit pattern of `value` as `uint32_t`.
+- [`f64_to_bits(value)`](./floats.h#L319): returns the raw 64-bit pattern of `value` as `uint64_t`.
+- [`f80_to_bits(value)`](./floats.h#L320): returns the raw 80-bit pattern of `value`, zero-extended to `__uint128_t`.
+- [`f128_to_bits(value)`](./floats.h#L321): returns the raw 128-bit pattern of `value` as `__uint128_t`.
+- [`f64pair_to_bits(value)`](./floats.h#L322): returns the raw 128-bit pattern of `value` as `__uint128_t`.
 
 ## Strings
 
 [`str.h`](./str.h) based on [`da.h`](#dynamic-arrays) provides types and methods to effectively work with strings (heavily inspired by [@tsoding's](https://www.youtube.com/@TsodingDaily) String_Builder, String_View and his [nob.h](https://github.com/tsoding/nob.h)).
 
 Structures:
-- [`String_Builder`](./str.h#L44): dynamic array of characters.
-- [`String_View`](./str.h#L47): slice view to array of characters.
-- [`String`](./str.h#L50): immutable string container.
-- [`Stringify_State`](./str.h#L137): helper structure to create custom `sb_append_` compatible functions
+- [`String_Builder`](./str.h#L45): dynamic array of characters.
+- [`String_View`](./str.h#L48): slice view to array of characters.
+- [`String`](./str.h#L51): immutable string container.
+- [`Stringify_State`](./str.h#L153): helper structure to create custom `sb_append_` compatible functions
 
 Example of usage:
 
@@ -240,31 +263,31 @@ int main(void) {
 
 Common string operations include:
 
-- [`sb_free(sb)`](./str.h#L53): Frees the buffer of `sb` and resets fields to 0.
-- [`sb_null_terminate(sb)`](./str.h#L56): Reallocate underlying string as cstr with null terminal and `capacity == count + 1`.
-- [`sb_first(sb)`](./str.h#L59): Returns the first character of `sb`.
-- [`sb_last(sb)`](./str.h#L61): Returns the last character of `sb`.
-- [`sb_at(sb, index)`](./str.h#L63): Returns the character at `index`.
-- [`sb_append(sb, character)`](./str.h#L69): Appends a single character. Returns number of characters added.
-- [`sb_append_buf(sb, buffer, count)`](./str.h#L77): Appends `count` characters from `buffer`. Returns number of characters added.
-- [`sb_vappendf(sb, fmt, ap)`](./str.h#L85): Appends formatted string. Returns number of characters added.
-- [`sb_appendf(sb, fmt, ...)`](./str.h#L90): Appends formatted string. Returns number of characters added.
-- [`sb_append_cstr(sb, cstr)`](./str.h#L95): Appends a null-terminated C string. Returns number of characters added.
-- [`sb_append_strlit(sb, str)`](./str.h#L102): Appends a string literal. Returns number of characters added.
-- [`sb_append_sv(sb, sv)`](./str.h#L110): Appends a `String_View` compatible value. Returns number of characters added.
-- [`sb_append_repeat(sb, character, count)`](./str.h#L115): Appends `character` repeated `count` times. Returns number of characters added.
-- [`sb_append_null(sb)`](./str.h#L126): Appends `'\0'` directly to `sb`. Returns number of characters added.
-- [`sb_append_pad_align(sb, size, [filler])`](./str.h#L131): Pads `sb` up to a multiple boundary of `size` using `filler` (defaults to `'\0'`). Returns number of characters added.
-- [`sb_substr(sb, [[start], count])`](./str.h#L134): Extracts a `String_View` slice from `sb`.
-- [`sb_copy(some_sb_append, ...some_sb_append_arguments)`](./str.h#L143): Executes `some_sb_append` callback on a temporary `String_Builder` and returns it.
+- [`sb_free(sb)`](./str.h#L54): Frees the buffer of `sb` and resets fields to 0.
+- [`sb_null_terminate(sb)`](./str.h#L57): Reallocate underlying string as cstr with null terminal and `capacity == count + 1`.
+- [`sb_first(sb)`](./str.h#L60): Returns the first character of `sb`.
+- [`sb_last(sb)`](./str.h#L62): Returns the last character of `sb`.
+- [`sb_at(sb, index)`](./str.h#L64): Returns the character at `index`.
+- [`sb_append(sb, character)`](./str.h#L70): Appends a single character. Returns number of characters added.
+- [`sb_append_buf(sb, buffer, count)`](./str.h#L78): Appends `count` characters from `buffer`. Returns number of characters added.
+- [`sb_vappendf(sb, fmt, ap)`](./str.h#L86): Appends formatted string. Returns number of characters added.
+- [`sb_appendf(sb, fmt, ...)`](./str.h#L91): Appends formatted string. Returns number of characters added.
+- [`sb_append_cstr(sb, cstr)`](./str.h#L96): Appends a null-terminated C string. Returns number of characters added.
+- [`sb_append_strlit(sb, str)`](./str.h#L103): Appends a string literal. Returns number of characters added.
+- [`sb_append_sv(sb, sv)`](./str.h#L111): Appends a `String_View` compatible value. Returns number of characters added.
+- [`sb_append_repeat(sb, character, count)`](./str.h#L116): Appends `character` repeated `count` times. Returns number of characters added.
+- [`sb_append_null(sb)`](./str.h#L127): Appends `'\0'` directly to `sb`. Returns number of characters added.
+- [`sb_append_pad_align(sb, size, [filler])`](./str.h#L133): Pads `sb` up to a multiple boundary of `size` using `filler` (defaults to `'\0'`). Returns number of characters added.
+- [`sb_substr(sb, [[start], count])`](./str.h#L136): Extracts a `String_View` slice from `sb`.
+- [`sb_copy(some_sb_append, ...some_sb_append_arguments)`](./str.h#L146): Executes `some_sb_append` callback on a temporary `String_Builder` and returns it.
 
 ### Stringify_State
 
 Helper utilities, usefull to create `sb_append_` like functions. All `sb_append_` functions can accept `NULL` pointer as `sb` and will still return number of characters that would have been written.
 
-- [`make_stringify_state(sb, capacity)`](./str.h#L178): Initializes a `Stringify_State` structure, ensuring `sb` has target capacity.
-- [`stringify_append(state, some_sb_append, ...)`](./str.h#L183): Runs `some_sb_append` callback into the state's `sb` and updates total appended count.
-- [`stringify_ptr(state, [offset])`](./str.h#L188): Computes pointer relative to the start position of this stringify session.
+- [`make_stringify_state(sb, capacity)`](./str.h#L186): Initializes a `Stringify_State` structure, ensuring `sb` has target capacity.
+- [`stringify_append(state, some_sb_append, ...)`](./str.h#L191): Runs `some_sb_append` callback into the state's `sb` and updates total appended count.
+- [`stringify_ptr(state, [offset])`](./str.h#L196): Computes pointer relative to the start position of this stringify session.
 
 Example of usage:
 
@@ -295,8 +318,8 @@ size_t sb_append_rand(String_Builder *sb, size_t size) {
 
 Library provides couple of
 
-- [`fprintf_stringify(f, some_sb_append, ...)`](./str.h#L201): Formats output directly to `FILE *f` using `some_sb_append` without allocating a long-lived string.
-- [`printf_stringify(some_sb_append, ...)`](./str.h#L215): Formats directly to `stdout` using `some_sb_append`.
+- [`fprintf_stringify(f, some_sb_append, ...)`](./str.h#L209): Formats output directly to `FILE *f` using `some_sb_append` without allocating a long-lived string.
+- [`printf_stringify(some_sb_append, ...)`](./str.h#L223): Formats directly to `stdout` using `some_sb_append`.
 
 Example of usage:
 
@@ -307,11 +330,11 @@ fprintf_stringify(stderr, sb_append_sv, sv_from_strlit("test"));
 
 ### String
 
-- [`string_from_sb(sb)`](./str.h#L218): Consumes `sb`, null-terminates it, transfers dynamic buffer ownership to a `String`.
-- [`string_from(some_sb_append, ...some_sb_append_arguments)`](./str.h#L228): Runs `some_sb_append` to populate a builder and returns an owning `String`.
-- [`string_from_strlit(str)`](./str.h#L233): Initializes an immutable `String` wrapper pointing directly to `str`.
-- [`string_assign(dst, src)`](./str.h#L235): Asserts `dst` is empty, then copies fields from `src`.
-- [`string_free(str)`](./str.h#L240): Frees the heap allocation backing `str` and zeroes out the struct.
+- [`string_from_sb(sb)`](./str.h#L226): Consumes `sb`, null-terminates it, transfers dynamic buffer ownership to a `String`.
+- [`string_from(some_sb_append, ...some_sb_append_arguments)`](./str.h#L236): Runs `some_sb_append` to populate a builder and returns an owning `String`.
+- [`string_from_strlit(str)`](./str.h#L241): Initializes an immutable `String` wrapper pointing directly to `str`.
+- [`string_assign(dst, src)`](./str.h#L243): Asserts `dst` is empty, then copies fields from `src`.
+- [`string_free(str)`](./str.h#L248): Frees the heap allocation backing `str` and zeroes out the struct.
 
 Example of usage:
 
@@ -329,46 +352,46 @@ string_free(&str4);
 
 ### String_View
 
-- [`sv_from_parts(data, count)`](./str.h#L250): Constructs a `String_View` from pointer and length.
-- [`sv_from_like(value)`](./str.h#L252): Polymorphic conversion macro mapping any String_View-like into `String_View`.
-- [`sv_from_strlit(str)`](./str.h#L258): Creates a `String_View` from a compile-time string literal.
-- [`sv_from_cstr(str)`](./str.h#L260): Creates a `String_View` from a standard C-string (`strlen`).
-- [`sv_eq(a, b)`](./str.h#L268): Compares two string views.
-- [`sv_starts_with(sv, prefix)`](./str.h#L282): Returns `true` if `sv` starts with `prefix`.
-- [`sv_ends_with(sv, suffix)`](./str.h#L275): Returns `true` if `sv` ends with `suffix`.
+- [`sv_from_parts(data, count)`](./str.h#L258): Constructs a `String_View` from pointer and length.
+- [`sv_from_like(value)`](./str.h#L260): Polymorphic conversion macro mapping any String_View-like into `String_View`.
+- [`sv_from_strlit(str)`](./str.h#L266): Creates a `String_View` from a compile-time string literal.
+- [`sv_from_cstr(str)`](./str.h#L268): Creates a `String_View` from a standard C-string (`strlen`).
+- [`sv_eq(a, b)`](./str.h#L275): Compares two string views.
+- [`sv_ends_with(sv, suffix)`](./str.h#L283): Returns `true` if `sv` ends with `suffix`.
+- [`sv_starts_with(sv, prefix)`](./str.h#L290): Returns `true` if `sv` starts with `prefix`.
 
 Slicing, Chopping & Trimming:
 
-- [`sv_chop_left(sv, [n])`](./str.h#L292): Mutates `sv` by removing `n` elements (default `1`) from the left and returns the chopped prefix.
-- [`sv_chop_right(sv, [n])`](./str.h#L302): Mutates `sv` by removing `n` elements (default `1`) from the right and returns the chopped suffix.
-- [`sv_find_expr(sv, id, expr)`](./str.h#L305): Searches forward for element matching `expr`. Same as `da_find_expr`.
-- [`sv_find_pred(sv, predicate)`](./str.h#L307): Searches forward for element satisfying `predicate`. Same as `da_find_pred`.
-- [`sv_find_right_expr(sv, id, expr)`](./str.h#L309): Searches backward for element matching `expr`. Same as `da_find_right_expr`.
-- [`sv_find_right_pred(sv, predicate)`](./str.h#L311): Searches backward for element satisfying `predicate`. Same as `da_find_right_pred`.
-- [`sv_chop_while_expr(sv, id, expr)`](./str.h#L314): Chops prefix while `expr` evaluates to true. Same as `da_slice_chop_while_expr`.
-- [`sv_chop_while_pred(sv, predicate)`](./str.h#L316): Chops prefix while `predicate` evaluates to true. Same as `da_slice_chop_while_pred`.
-- [`sv_chop_while(sv, predicate)`](./str.h#L321): Polymorphic chop-left macro accepting `int(*)(int)`, `bool(*)(char)`, or `bool(*)(char, size_t)`.
-- [`sv_chop_right_while_expr(sv, id, expr)`](./str.h#L327): Chops suffix from right while `expr` is true. Same as `da_slice_chop_right_while_expr`.
-- [`sv_chop_right_while_pred(sv, predicate)`](./str.h#L329): Chops suffix from right while `predicate` is true. Same as `da_slice_chop_right_while_pred`.
-- [`sv_chop_right_while(sv, predicate)`](./str.h#L334): Polymorphic chop-right macro accepting `int(*)(int)`, `bool(*)(char)`, or `bool(*)(char, size_t)`.
-- [`sv_chop_by_delim_expr(sv, id, expr)`](./str.h#L340): Chops prefix up to first match of `expr`. Same as `da_slice_chop_by_delim_expr`.
-- [`sv_chop_by_delim_pred(sv, predicate)`](./str.h#L342): Chops prefix up to first match of `predicate`. Same as `da_slice_chop_by_delim_pred`.
-- [`sv_chop_by_delim(sv, predicate)`](./str.h#L347): Polymorphic delimiter chop accepting single-char predicate variants.
-- [`sv_chop_right_by_delim_expr(sv, id, expr)`](./str.h#L353): Chops suffix back to last match of `expr`. Same as `da_slice_chop_right_by_delim_expr`.
-- [`sv_chop_right_by_delim_pred(sv, predicate)`](./str.h#L355): Chops suffix back to last match of `predicate`. Same as `da_slice_chop_right_by_delim_pred`.
-- [`sv_chop_right_by_delim(sv, predicate)`](./str.h#L360): Polymorphic delimiter chop-right accepting single-char predicate variants.
-- [`sv_trim_left(sv)`](./str.h#L366): Strips leading whitespace (`isspace`) from `sv`.
-- [`sv_trim_right(sv)`](./str.h#L370): Strips trailing whitespace (`isspace`) from `sv`.
-- [`sv_trim(sv)`](./str.h#L374): Trims both leading and trailing whitespace from `sv`.
-- [`sv_chop_by_char_delim(sv, delimeter)`](./str.h#L381): Splits `sv` at the first occurrence of character `delimeter`.
-- [`sv_chop_right_by_char_delim(sv, delimeter)`](./str.h#L383): Splits `sv` from the right at the last occurrence of character `delimeter`.
-- [`sv_chop_by_sv(sv, delimeter)`](./str.h#L386): Splits `sv` at first occurrence of `String_View` `delimeter`.
-- [`sv_chop_right_by_sv(sv, delimeter)`](./str.h#L388): Splits `sv` from right at last occurrence of `String_View` `delimeter`.
+- [`sv_chop_left(sv, [n])`](./str.h#L303): Mutates `sv` by removing `n` elements (default `1`) from the left and returns the chopped prefix.
+- [`sv_chop_right(sv, [n])`](./str.h#L315): Mutates `sv` by removing `n` elements (default `1`) from the right and returns the chopped suffix.
+- [`sv_find_expr(sv, id, expr)`](./str.h#L318): Searches forward for element matching `expr`. Same as `da_find_expr`.
+- [`sv_find_pred(sv, predicate)`](./str.h#L320): Searches forward for element satisfying `predicate`. Same as `da_find_pred`.
+- [`sv_find_right_expr(sv, id, expr)`](./str.h#L322): Searches backward for element matching `expr`. Same as `da_find_right_expr`.
+- [`sv_find_right_pred(sv, predicate)`](./str.h#L324): Searches backward for element satisfying `predicate`. Same as `da_find_right_pred`.
+- [`sv_chop_while_expr(sv, id, expr)`](./str.h#L327): Chops prefix while `expr` evaluates to true. Same as `da_slice_chop_while_expr`.
+- [`sv_chop_while_pred(sv, predicate)`](./str.h#L329): Chops prefix while `predicate` evaluates to true. Same as `da_slice_chop_while_pred`.
+- [`sv_chop_while(sv, predicate)`](./str.h#L334): Polymorphic chop-left macro accepting `int(*)(int)`, `bool(*)(char)`, or `bool(*)(char, size_t)`.
+- [`sv_chop_right_while_expr(sv, id, expr)`](./str.h#L340): Chops suffix from right while `expr` is true. Same as `da_slice_chop_right_while_expr`.
+- [`sv_chop_right_while_pred(sv, predicate)`](./str.h#L342): Chops suffix from right while `predicate` is true. Same as `da_slice_chop_right_while_pred`.
+- [`sv_chop_right_while(sv, predicate)`](./str.h#L347): Polymorphic chop-right macro accepting `int(*)(int)`, `bool(*)(char)`, or `bool(*)(char, size_t)`.
+- [`sv_chop_by_delim_expr(sv, id, expr)`](./str.h#L353): Chops prefix up to first match of `expr`. Same as `da_slice_chop_by_delim_expr`.
+- [`sv_chop_by_delim_pred(sv, predicate)`](./str.h#L355): Chops prefix up to first match of `predicate`. Same as `da_slice_chop_by_delim_pred`.
+- [`sv_chop_by_delim(sv, predicate)`](./str.h#L360): Polymorphic delimiter chop accepting single-char predicate variants.
+- [`sv_chop_right_by_delim_expr(sv, id, expr)`](./str.h#L366): Chops suffix back to last match of `expr`. Same as `da_slice_chop_right_by_delim_expr`.
+- [`sv_chop_right_by_delim_pred(sv, predicate)`](./str.h#L368): Chops suffix back to last match of `predicate`. Same as `da_slice_chop_right_by_delim_pred`.
+- [`sv_chop_right_by_delim(sv, predicate)`](./str.h#L373): Polymorphic delimiter chop-right accepting single-char predicate variants.
+- [`sv_trim_left(sv)`](./str.h#L379): Strips leading whitespace (`isspace`) from `sv`.
+- [`sv_trim_right(sv)`](./str.h#L383): Strips trailing whitespace (`isspace`) from `sv`.
+- [`sv_trim(sv)`](./str.h#L387): Trims both leading and trailing whitespace from `sv`.
+- [`sv_chop_by_char_delim(sv, delimeter)`](./str.h#L394): Splits `sv` at the first occurrence of character `delimeter`.
+- [`sv_chop_right_by_char_delim(sv, delimeter)`](./str.h#L396): Splits `sv` from the right at the last occurrence of character `delimeter`.
+- [`sv_chop_by_sv(sv, delimeter)`](./str.h#L399): Splits `sv` at first occurrence of `String_View` `delimeter`.
+- [`sv_chop_right_by_sv(sv, delimeter)`](./str.h#L401): Splits `sv` from right at last occurrence of `String_View` `delimeter`.
 
 Utilities:
 
-- [`SV_FMT`](./str.h#L391): Format string constant `"%.*s"` for `printf` family functions.
-- [`sv_fmt_arg(sv)`](./str.h#L393): Expands to `(int)(sv).count, (sv).data` for use with `SV_FMT`.
+- [`SV_FMT`](./str.h#L404): Format string constant `"%.*s"` for `printf` family functions.
+- [`sv_fmt_arg(sv)`](./str.h#L406): Expands to `(int)(sv).count, (sv).data` for use with `SV_FMT`.
 
 Example of usage:
 
@@ -424,56 +447,56 @@ Example of usage:
 
 [`str_integers.h`](./str_integers.h) provides necessary functions to natively support integer numbers for [`str.h`](#strings).
 
-- [`struct Sb_Integer_Format`](./str_integers.h#L49): Represents how integer must be formated in the string.
+- [`struct Sb_Integer_Format`](./str_integers.h#L57): Represents how integer must be formated in the string.
 
 Provides couple of integer number format kinds:
 
-- [`SB_INTEGER_FORMAT_KIND_DECIMAL`](./str_integers.h#L42): regular decimal format.
-- [`SB_INTEGER_FORMAT_KIND_BINARY`](./str_integers.h#L43): binary number format, provides default prefix `0b`.
-- [`SB_INTEGER_FORMAT_KIND_OCTAL`](./str_integers.h#L44): octal number format, provides default prefix `0o`.
-- [`SB_INTEGER_FORMAT_KIND_HEX`](./str_integers.h#L45): hex number format, using a-f alphadigits, provides default prefix `0x`.
-- [`SB_INTEGER_FORMAT_KIND_HEX_BIG`](./str_integers.h#L46): hex number format, using A-F alphadigits, provides default prefix `0x`.
+- [`SB_INTEGER_FORMAT_KIND_DECIMAL`](./str_integers.h#L49): regular decimal format.
+- [`SB_INTEGER_FORMAT_KIND_BINARY`](./str_integers.h#L50): binary number format, provides default prefix `0b`.
+- [`SB_INTEGER_FORMAT_KIND_OCTAL`](./str_integers.h#L51): octal number format, provides default prefix `0o`.
+- [`SB_INTEGER_FORMAT_KIND_HEX`](./str_integers.h#L52): hex number format, using a-f alphadigits, provides default prefix `0x`.
+- [`SB_INTEGER_FORMAT_KIND_HEX_BIG`](./str_integers.h#L53): hex number format, using A-F alphadigits, provides default prefix `0x`.
 
 And options:
 
-- [`hide_prefix`](./str_integers.h#L51): hides prefix, even if `prefix` provided.
-- [`prefix`](./str_integers.h#L52): custom prefix.
-- [`min_width`](./str_integers.h#L53): minimal width of whole resulting string, if string is too small it will pad with spaces at string begining.
+- [`hide_prefix`](./str_integers.h#L59): hides prefix, even if `prefix` provided.
+- [`prefix`](./str_integers.h#L60): custom prefix.
+- [`min_width`](./str_integers.h#L61): minimal width of whole resulting string, if string is too small it will pad with spaces at string begining.
 
 Formatter functions:
 
-- [`sb_append_i8_number_fmt(sb, value, fmt)`](./str_integers.h#L57): int8_t formatter.
-- [`sb_append_i16_number_fmt(sb, value, fmt)`](./str_integers.h#L58): int16_t formatter.
-- [`sb_append_i32_number_fmt(sb, value, fmt)`](./str_integers.h#L59): int32_t formatter.
-- [`sb_append_i64_number_fmt(sb, value, fmt)`](./str_integers.h#L60): int64_t formatter.
-- [`sb_append_i128_number_fmt(sb, value, fmt)`](./str_integers.h#L61): __int128_t formatter.
-- [`sb_append_u8_number_fmt(sb, value, fmt)`](./str_integers.h#L70): uint8_t formatter.
-- [`sb_append_u16_number_fmt(sb, value, fmt)`](./str_integers.h#L71): uint16_t formatter.
-- [`sb_append_u32_number_fmt(sb, value, fmt)`](./str_integers.h#L72): uint32_t formatter.
-- [`sb_append_u64_number_fmt(sb, value, fmt)`](./str_integers.h#L73): uint64_t formatter.
-- [`sb_append_u128_number_fmt(sb, value, fmt)`](./str_integers.h#L74): __uint128_t formatter.
+- [`sb_append_i8_number_fmt(sb, value, fmt)`](./str_integers.h#L65): int8_t formatter.
+- [`sb_append_i16_number_fmt(sb, value, fmt)`](./str_integers.h#L66): int16_t formatter.
+- [`sb_append_i32_number_fmt(sb, value, fmt)`](./str_integers.h#L67): int32_t formatter.
+- [`sb_append_i64_number_fmt(sb, value, fmt)`](./str_integers.h#L68): int64_t formatter.
+- [`sb_append_i128_number_fmt(sb, value, fmt)`](./str_integers.h#L69): __int128_t formatter.
+- [`sb_append_u8_number_fmt(sb, value, fmt)`](./str_integers.h#L78): uint8_t formatter.
+- [`sb_append_u16_number_fmt(sb, value, fmt)`](./str_integers.h#L79): uint16_t formatter.
+- [`sb_append_u32_number_fmt(sb, value, fmt)`](./str_integers.h#L80): uint32_t formatter.
+- [`sb_append_u64_number_fmt(sb, value, fmt)`](./str_integers.h#L81): uint64_t formatter.
+- [`sb_append_u128_number_fmt(sb, value, fmt)`](./str_integers.h#L82): __uint128_t formatter.
 
 All formatters function also have `struct as macro __VA_ARGS__` variant
 
-- [`sb_append_i8_number(sb, value, ...fmt_fields)`](./str_integers.h#L63): int8_t formatter.
-- [`sb_append_i16_number(sb, value, ...fmt_fields)`](./str_integers.h#L64): int16_t formatter.
-- [`sb_append_i32_number(sb, value, ...fmt_fields)`](./str_integers.h#L65): int32_t formatter.
-- [`sb_append_i64_number(sb, value, ...fmt_fields)`](./str_integers.h#L66): int64_t formatter.
-- [`sb_append_i128_number(sb, value, ...fmt_fields)`](./str_integers.h#L67): __int128_t formatter.
-- [`sb_append_u8_number(sb, value, ...fmt_fields)`](./str_integers.h#L76): uint8_t formatter.
-- [`sb_append_u16_number(sb, value, ...fmt_fields)`](./str_integers.h#L77): uint16_t formatter.
-- [`sb_append_u32_number(sb, value, ...fmt_fields)`](./str_integers.h#L78): uint32_t formatter.
-- [`sb_append_u64_number(sb, value, ...fmt_fields)`](./str_integers.h#L79): uint64_t formatter.
-- [`sb_append_u128_number(sb, value, ...fmt_fields)`](./str_integers.h#L80): __uint128_t formatter.
+- [`sb_append_i8_number(sb, value, ...fmt_fields)`](./str_integers.h#L71): int8_t formatter.
+- [`sb_append_i16_number(sb, value, ...fmt_fields)`](./str_integers.h#L72): int16_t formatter.
+- [`sb_append_i32_number(sb, value, ...fmt_fields)`](./str_integers.h#L73): int32_t formatter.
+- [`sb_append_i64_number(sb, value, ...fmt_fields)`](./str_integers.h#L74): int64_t formatter.
+- [`sb_append_i128_number(sb, value, ...fmt_fields)`](./str_integers.h#L75): __int128_t formatter.
+- [`sb_append_u8_number(sb, value, ...fmt_fields)`](./str_integers.h#L84): uint8_t formatter.
+- [`sb_append_u16_number(sb, value, ...fmt_fields)`](./str_integers.h#L85): uint16_t formatter.
+- [`sb_append_u32_number(sb, value, ...fmt_fields)`](./str_integers.h#L86): uint32_t formatter.
+- [`sb_append_u64_number(sb, value, ...fmt_fields)`](./str_integers.h#L87): uint64_t formatter.
+- [`sb_append_u128_number(sb, value, ...fmt_fields)`](./str_integers.h#L88): __uint128_t formatter.
 
 And there is also polymorphic variants:
 
-- [`sb_append_signed_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L143): polymorphic signed integer types formatter.
-- [`sb_append_signed_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L152): polymorphic signed integer types formatter.
-- [`sb_append_unsigned_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L155): polymorphic unsigned integer types formatter.
-- [`sb_append_unsigned_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L164): polymorphic unsigned integer types formatter.
-- [`sb_append_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L167): polymorphic integer types formatter.
-- [`sb_append_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L177): polymorphic integer types formatter.
+- [`sb_append_signed_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L157): polymorphic signed integer types formatter.
+- [`sb_append_signed_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L166): polymorphic signed integer types formatter.
+- [`sb_append_unsigned_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L169): polymorphic unsigned integer types formatter.
+- [`sb_append_unsigned_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L178): polymorphic unsigned integer types formatter.
+- [`sb_append_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L181): polymorphic integer types formatter.
+- [`sb_append_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L191): polymorphic integer types formatter.
 
 Example of usage:
 
@@ -494,50 +517,50 @@ int main(void) {
 [`str_floats.h`](./str_floats.h) provides necessary functions to natively support floating point numbers in `String_Builder` for [`str.h`](#strings).
 It is using ryu algorithm to parse floating number, actual implementation of Ulf Adams from https://github.com/ulfjack/ryu.
 
-- [`struct Sb_Floating_Format`](./str_floats.h#L49): Represents how floating point number must be formated in the string.
+- [`struct Sb_Floating_Format`](./str_floats.h#L58): Represents how floating point number must be formated in the string.
 
 Provides couple of integer number format kinds:
 
-- [`SB_FLOATING_FORMAT_KIND_DECIMAL`](./str_floats.h#L42): regular decimal format.
-- [`SB_FLOATING_FORMAT_KIND_FIXED`](./str_floats.h#L43): fixed decimal format.
-- [`SB_FLOATING_FORMAT_KIND_HEX`](./str_floats.h#L45): hex mantissa format, using a-f alphadigits.
-- [`SB_FLOATING_FORMAT_KIND_HEX_BIG`](./str_floats.h#L46): hex mantissa format, using A-F alphadigits.
+- [`SB_FLOATING_FORMAT_KIND_DECIMAL`](./str_floats.h#L52): regular decimal format.
+- [`SB_FLOATING_FORMAT_KIND_FIXED`](./str_floats.h#L53): fixed decimal format.
+- [`SB_FLOATING_FORMAT_KIND_HEX`](./str_floats.h#L54): hex mantissa format, using a-f alphadigits.
+- [`SB_FLOATING_FORMAT_KIND_HEX_BIG`](./str_floats.h#L55): hex mantissa format, using A-F alphadigits.
 
 And options:
 
-- [`min_width`](./str_floats.h#L53): minimal width of whole resulting string, if string is too small it will pad with spaces at string begining.
-- [`precision`](./str_floats.h#L53): precision for fixed format.
+- [`min_width`](./str_floats.h#L60): minimal width of whole resulting string, if string is too small it will pad with spaces at string begining.
+- [`precision`](./str_floats.h#L61): precision for fixed format.
 
 Formatter functions:
 
-- [`sb_append_f16_number_fmt(sb, f16_t value, fmt)`](./str_floats.h#L) f16_t formatter
-- [`sb_append_f32_number_fmt(sb, float value, fmt)`](./str_floats.h#L) float formatter
-- [`sb_append_f64_number_fmt(sb, double value, fmt)`](./str_floats.h#L) double formatter
-- [`sb_append_f80_number_fmt(sb, f80_t value, fmt)`](./str_floats.h#L) f80_t formatter
-- [`sb_append_f128_number_fmt(sb, f128_t value, fmt)`](./str_floats.h#L) f128_t formatter
-- [`sb_append_f64pair_number_fmt(sb, f64pair_t value, fmt)`](./str_floats.h#L) f64pair_t formatter
-- [`sb_append_f16_canonical_number_fmt(sb, f16_canonical_t value, fmt)`](./str_floats.h#L) f16_canonical_t formatter
-- [`sb_append_f80_canonical_number_fmt(sb, f80_canonical_t value, fmt)`](./str_floats.h#L) f80_canonical_t formatter
-- [`sb_append_f128_canonical_number_fmt(sb, f128_canonical_t value, fmt)`](./str_floats.h#L) f128_canonical_t formatter
-- [`sb_append_f64pair_canonical_number_fmt(sb, f64pair_canonical_t value, fmt)`](./str_floats.h#L) f64pair_canonical_t formatter
+- [`sb_append_f16_number_fmt(sb, f16_t value, fmt)`](./str_floats.h#L65): f16_t formatter
+- [`sb_append_f32_number_fmt(sb, float value, fmt)`](./str_floats.h#L66): float formatter
+- [`sb_append_f64_number_fmt(sb, double value, fmt)`](./str_floats.h#L67): double formatter
+- [`sb_append_f80_number_fmt(sb, f80_t value, fmt)`](./str_floats.h#L68): f80_t formatter
+- [`sb_append_f128_number_fmt(sb, f128_t value, fmt)`](./str_floats.h#L69): f128_t formatter
+- [`sb_append_f64pair_number_fmt(sb, f64pair_t value, fmt)`](./str_floats.h#L70): f64pair_t formatter
+- [`sb_append_f16_canonical_number_fmt(sb, f16_canonical_t value, fmt)`](./str_floats.h#L71): f16_canonical_t formatter
+- [`sb_append_f80_canonical_number_fmt(sb, f80_canonical_t value, fmt)`](./str_floats.h#L72): f80_canonical_t formatter
+- [`sb_append_f128_canonical_number_fmt(sb, f128_canonical_t value, fmt)`](./str_floats.h#L73): f128_canonical_t formatter
+- [`sb_append_f64pair_canonical_number_fmt(sb, f64pair_canonical_t value, fmt)`](./str_floats.h#L74): f64pair_canonical_t formatter
 
 All formatters function also have `struct as macro __VA_ARGS__` variant
 
-- [`sb_append_f16_number(sb, f16_t value, ...fmt_args)`](./str_floats.h#L) f16_t formatter
-- [`sb_append_f32_number(sb, float value, ...fmt_args)`](./str_floats.h#L) float formatter
-- [`sb_append_f64_number(sb, double value, ...fmt_args)`](./str_floats.h#L) double formatter
-- [`sb_append_f80_number(sb, f80_t value, ...fmt_args)`](./str_floats.h#L) f80_t formatter
-- [`sb_append_f128_number(sb, f128_t value, ...fmt_args)`](./str_floats.h#L) f128_t formatter
-- [`sb_append_f64pair_number(sb, f64pair_t value, ...fmt_args)`](./str_floats.h#L) f64pair_t formatter
-- [`sb_append_f16_canonical_number(sb, f16_canonical_t value, ...fmt_args)`](./str_floats.h#L) f16_canonical_t formatter
-- [`sb_append_f80_canonical_number(sb, f80_canonical_t value, ...fmt_args)`](./str_floats.h#L) f80_canonical_t formatter
-- [`sb_append_f128_canonical_number(sb, f128_canonical_t value, ...fmt_args)`](./str_floats.h#L) f128_canonical_t formatter
-- [`sb_append_f64pair_canonical_number(sb, f64pair_canonical_t value, ...fmt_args)`](./str_floats.h#L) f64pair_canonical_t formatter
+- [`sb_append_f16_number(sb, f16_t value, ...fmt_args)`](./str_floats.h#L76): f16_t formatter
+- [`sb_append_f32_number(sb, float value, ...fmt_args)`](./str_floats.h#L77): float formatter
+- [`sb_append_f64_number(sb, double value, ...fmt_args)`](./str_floats.h#L78): double formatter
+- [`sb_append_f80_number(sb, f80_t value, ...fmt_args)`](./str_floats.h#L79): f80_t formatter
+- [`sb_append_f128_number(sb, f128_t value, ...fmt_args)`](./str_floats.h#L80): f128_t formatter
+- [`sb_append_f64pair_number(sb, f64pair_t value, ...fmt_args)`](./str_floats.h#L81): f64pair_t formatter
+- [`sb_append_f16_canonical_number(sb, f16_canonical_t value, ...fmt_args)`](./str_floats.h#L82): f16_canonical_t formatter
+- [`sb_append_f80_canonical_number(sb, f80_canonical_t value, ...fmt_args)`](./str_floats.h#L83): f80_canonical_t formatter
+- [`sb_append_f128_canonical_number(sb, f128_canonical_t value, ...fmt_args)`](./str_floats.h#L84): f128_canonical_t formatter
+- [`sb_append_f64pair_canonical_number(sb, f64pair_canonical_t value, ...fmt_args)`](./str_floats.h#L85): f64pair_canonical_t formatter
 
 And there is also polymorphic variants:
 
-- [`sb_append_floating_number_fmt(sb, value, fmt)`](./str_floats.h#L167): polymorphic floating types formatter.
-- [`sb_append_floating_number(sb, value, ...fmt_args)`](./str_floats.h#L177): polymorphic floating types formatter.
+- [`sb_append_floating_number_fmt(sb, value, fmt)`](./str_floats.h#L148): polymorphic floating types formatter.
+- [`sb_append_floating_number(sb, value, ...fmt_args)`](./str_floats.h#L157): polymorphic floating types formatter.
 
 Example of usage:
 
@@ -558,16 +581,91 @@ int main(void) {
 [`str_numbers.h`](./str_numbers.h) provides convinient polymorphic function to stringify
 any kind of number, using [`str_integers.h`](#strings-integers) and [`str_floats.h`](#strings-floats).
 
-- [`sb_append_number_fmt(sb, value, fmt)`](./str_numbers.h#L167): polymorphic floating types formatter.
-- [`sb_append_number(sb, value, ...fmt_args)`](./str_numbers.h#L177): polymorphic floating types formatter.
+- [`sb_append_number_fmt(sb, value, fmt)`](./str_numbers.h#L39): polymorphic floating types formatter.
+- [`sb_append_number(sb, value, ...fmt_args)`](./str_numbers.h#L55): polymorphic floating types formatter.
 
 ## Defines
 
-[`defines.h`](./defines.h) provides preprocessor utilities.
+[`defines.h`](./defines.h) provides small preprocessor utilities used throughout the rest of the libraries (variadic dispatch, argument defaults, stringification, etc).
 
-- [``](./str_numbers.h#L167): polymorphic floating types formatter.
+- [`FOR_EACH(MACRO, ...)`](./defines.h#L21): Runs `MACRO` for each argument, separated by comma.
+- [`UNUSED(...)`](./defines.h#L25): Variadic macro that marks all passed variables as used.
+- [`NOOP()`](./defines.h#L28): 'No operation' macro.
+- [`STRINGIFY(x)`](./defines.h#L32): Creates a string literal from tokens, expanding `x` first.
+
+Argument manipulation:
+
+- [`EXPAND(...)`](./defines.h#L35): Expands to `__VA_ARGS__`.
+- [`EXPAND_WITH_COMMA(...)`](./defines.h#L37): Expands to `__VA_ARGS__` with a comma before it (empty if no arguments).
+- [`EXPAND_PARENTHESES(args)`](./defines.h#L39): Removes parentheses from `args`.
+- [`EXPAND_MACRO(MACRO, ...)`](./defines.h#L41): Expands to a call of `MACRO` with `__VA_ARGS__`.
+- [`REST_ARGS(a, ...)`](./defines.h#L44): Removes the first argument, expanding to the rest.
+- [`FIRST_ARG(a, ...)`](./defines.h#L47): Expands to the first argument.
+- [`SECOND_ARG(a, b, ...)`](./defines.h#L49): Expands to the second argument.
+- [`THIRD_ARG(a, b, c, ...)`](./defines.h#L51): Expands to the third argument.
+- [`FORTH_ARG(a, b, c, d, ...)`](./defines.h#L53): Expands to the fourth argument.
+
+Defaults:
+
+- [`WITH_DEFAULT(d, ...)`](./defines.h#L56): Expands to the first argument in `__VA_ARGS__`, or to `d` if none was provided.
+- [`WITH_TWO_DEFAULTS(d1, d2, ...)`](./defines.h#L58): Expands to the first two arguments in `__VA_ARGS__`, or to `d1, d2` for any that are missing.
+- [`IF_VA_OPT(yes, no, ...)`](./defines.h#L61): Expands to `yes` if it was provided with `__VA_ARGS__`, or to `no` if not.
+
+Misc:
+
+- [`MIN(a, b)`](./defines.h#L64): Compares two values and returns the minimal.
+- [`PRINTF_ATTRIBUTE(STRING_INDEX, FIRST_TO_CHECK)`](./defines.h#L67): Marks a function with a printf-style static check.
+- [`PRINTF_FMT_PARAM`](./defines.h#L69): Marks a function parameter as the printf format argument.
+
+Example of usage:
+
+```c
+#include "defines.h"
+
+#define LOG(message, args, ...) fprintf(WITH_DEFAULT(stdout, __VA_ARGS__), message, EXPAND_PARENS(args))
+
+void example(int x, void *unused_ptr, ...) {
+  UNUSED(x, unused_ptr);
+  int a = FIRST_ARG(1, 2, 3);
+  int b = SECOND_ARG(1, 2, 3);
+}
+```
 
 ## Abort
+
+[`abort.h`](./abort.h) provides small panic and assertion utilities for c23, built on top of [`defines.h`](#preprocessor-utilities).
+
+- [`panicf(file, line, label, format, ...)`](./abort.h#L17): Prints `file:line: label: <formatted message>` to `stderr` and calls `abort()`. Does not return.
+- [`TODO(...)`](./abort.h#L21): Panics with a `"TODO"` label. Message defaults to [`TODO_DEFAULT_MESSAGE`](./abort.h#L18) (`"not implemented yet"`), or accepts a printf-style format and arguments.
+- [`UNREACHABLE(format, ...)`](./abort.h#L23): Panics with an `"UNREACHABLE"` label. Message defaults to `"should never happen"`, or accepts a printf-style format and arguments.
+
+- [`ASSERT(condition, format, ...)`](./abort.h#L26): If `condition` is false, panics via `UNREACHABLE` with the given message.
+- [`STATIC_ASSERT(condition, msg)`](./abort.h#L28): Compile-time assertion usable as an expression (evaluates to a `sizeof`).
+- [`TYPE_ASSERT(value, expected, ...)`](./abort.h#L30): Compile-time assertion that `value`'s type matches `expected`, using `STATIC_ASSERT`. Message defaults to `"Type mismatch"`.
+
+Example of usage:
+
+```c
+#define ABORT_IMPL
+#include "abort.h"
+
+int divide(int a, int b) {
+  ASSERT(b != 0, "division by zero: %d / %d", a, b);
+  return a / b;
+}
+
+void unimplemented_feature(void) {
+  TODO("wire up the new parser");
+}
+
+void handle_state(int state) {
+  switch (state) {
+    case 0: /* ... */ break;
+    case 1: /* ... */ break;
+    default: UNREACHABLE("unexpected state: %d", state);
+  }
+}
+```
 
 ## Reference counting
 
