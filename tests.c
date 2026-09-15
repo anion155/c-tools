@@ -2,6 +2,8 @@
 #include <da.h>
 #define STR_IMPL
 #include "str.h"
+#define STR_UTF_IMPL
+#include "str_utf.h"
 
 int main(void) {
   String_Builder sb = {0};

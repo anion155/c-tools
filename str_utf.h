@@ -1,19 +1,19 @@
-#ifndef SB_UTF_H
-#define SB_UTF_H
+#ifndef STR_UTF_H
+#define STR_UTF_H
 
-#include <sb.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <str.h>
 
 extern const uint8_t utf8_character_lengths[0x100];
 
 size_t sv__utf_length(String_View sv, size_t *bytes_overrun);
 #define sv_utf_length(sv, ...) sv__utf_length(sv_from_like(sv), WITH_DEFAULT(NULL, __VA_ARGS__))
 
-#endif // SB_UTF_H
+#endif // STR_UTF_H
 
-#if defined(SB_UTF_IMPL) && !defined(SB_UTF_IMPL_C)
-#define SB_UTF_IMPL_C
+#if defined(STR_UTF_IMPL) && !defined(STR_UTF_IMPL_C)
+#define STR_UTF_IMPL_C
 
 // clang-format off
 const uint8_t utf8_character_lengths[] = {
@@ -40,4 +40,4 @@ size_t sv__utf_length(String_View sv, size_t *bytes_overrun) {
   return count;
 }
 
-#endif // SB_UTF_IMPL_C
+#endif // STR_UTF_IMPL_C
