@@ -1,18 +1,18 @@
 /**
- * str_integer.h - 0.2.0 - Public Domain - https://github.com/anion155/c-tools
+ * str_integers.h - 0.2.0 - Public Domain - https://github.com/anion155/c-tools
  *
  * Utilities to format integer numbers to strings for c23.
  *
  * ## Usage example
  * ```c
-  #define STR_INTEGER_IMPL
-  #include "str_integer.h"
+  #define STR_INTEGERS_IMPL
+  #include "str_integers.h"
 
   int main(void) {
     String_Builder sb = {0};
-    sb_append_integer(&sb, (long)120349);
-    sb_append_integer(&sb, (long long)120349, .kind = SB_INTEGER_FORMAT_KIND_HEX);
-    sb_append_integer(&sb, (char)126, .kind = SB_INTEGER_FORMAT_KIND_BINARY);
+    sb_append_integer_number(&sb, (long)120349);
+    sb_append_integer_number(&sb, (long long)120349, .kind = SB_INTEGER_FORMAT_KIND_HEX);
+    sb_append_integer_number(&sb, (char)126, .kind = SB_INTEGER_FORMAT_KIND_BINARY);
   }
  * ```
  *
@@ -25,8 +25,8 @@
  * - [abort.h](./abort.h)
  */
 
-#ifndef STR_INTEGER_H
-#define STR_INTEGER_H
+#ifndef STR_INTEGERS_H
+#define STR_INTEGERS_H
 
 #include <defines.h>
 #include <limits.h>
@@ -62,88 +62,88 @@ typedef struct Sb_Integer_Format {
 } Sb_Integer_Format;
 
 /** Signed formatter functions. */
-size_t sb_append_integer_i8_fmt(String_Builder *sb, int8_t value, Sb_Integer_Format fmt);
-size_t sb_append_integer_i16_fmt(String_Builder *sb, int16_t value, Sb_Integer_Format fmt);
-size_t sb_append_integer_i32_fmt(String_Builder *sb, int32_t value, Sb_Integer_Format fmt);
-size_t sb_append_integer_i64_fmt(String_Builder *sb, int64_t value, Sb_Integer_Format fmt);
-size_t sb_append_integer_i128_fmt(String_Builder *sb, __int128_t value, Sb_Integer_Format fmt);
+size_t sb_append_i8_number_fmt(String_Builder *sb, int8_t value, Sb_Integer_Format fmt);
+size_t sb_append_i16_number_fmt(String_Builder *sb, int16_t value, Sb_Integer_Format fmt);
+size_t sb_append_i32_number_fmt(String_Builder *sb, int32_t value, Sb_Integer_Format fmt);
+size_t sb_append_i64_number_fmt(String_Builder *sb, int64_t value, Sb_Integer_Format fmt);
+size_t sb_append_i128_number_fmt(String_Builder *sb, __int128_t value, Sb_Integer_Format fmt);
 /** Signed formatter functions with format options accepted as __VA_ARGS__. */
-#define sb_append_integer_i8(sb, value, ...) sb_append_integer_i8_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
-#define sb_append_integer_i16(sb, value, ...) sb_append_integer_i16_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
-#define sb_append_integer_i32(sb, value, ...) sb_append_integer_i32_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
-#define sb_append_integer_i64(sb, value, ...) sb_append_integer_i64_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
-#define sb_append_integer_i128(sb, value, ...) sb_append_integer_i128_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_i8_number(sb, value, ...) sb_append_i8_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_i16_number(sb, value, ...) sb_append_i16_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_i32_number(sb, value, ...) sb_append_i32_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_i64_number(sb, value, ...) sb_append_i64_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_i128_number(sb, value, ...) sb_append_i128_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
 
 /** Unsigned formatter functions. */
-size_t sb_append_integer_u8_fmt(String_Builder *sb, uint8_t value, Sb_Integer_Format fmt);
-size_t sb_append_integer_u16_fmt(String_Builder *sb, uint16_t value, Sb_Integer_Format fmt);
-size_t sb_append_integer_u32_fmt(String_Builder *sb, uint32_t value, Sb_Integer_Format fmt);
-size_t sb_append_integer_u64_fmt(String_Builder *sb, uint64_t value, Sb_Integer_Format fmt);
-size_t sb_append_integer_u128_fmt(String_Builder *sb, __uint128_t value, Sb_Integer_Format fmt);
+size_t sb_append_u8_number_fmt(String_Builder *sb, uint8_t value, Sb_Integer_Format fmt);
+size_t sb_append_u16_number_fmt(String_Builder *sb, uint16_t value, Sb_Integer_Format fmt);
+size_t sb_append_u32_number_fmt(String_Builder *sb, uint32_t value, Sb_Integer_Format fmt);
+size_t sb_append_u64_number_fmt(String_Builder *sb, uint64_t value, Sb_Integer_Format fmt);
+size_t sb_append_u128_number_fmt(String_Builder *sb, __uint128_t value, Sb_Integer_Format fmt);
 /** Unsigned formatter functions with format options accepted as __VA_ARGS__. */
-#define sb_append_integer_u8(sb, value, ...) sb_append_integer_u8_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
-#define sb_append_integer_u16(sb, value, ...) sb_append_integer_u16_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
-#define sb_append_integer_u32(sb, value, ...) sb_append_integer_u32_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
-#define sb_append_integer_u64(sb, value, ...) sb_append_integer_u64_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
-#define sb_append_integer_u128(sb, value, ...) sb_append_integer_u128_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_u8_number(sb, value, ...) sb_append_u8_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_u16_number(sb, value, ...) sb_append_u16_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_u32_number(sb, value, ...) sb_append_u32_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_u64_number(sb, value, ...) sb_append_u64_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_u128_number(sb, value, ...) sb_append_u128_number_fmt((sb), (value), ((Sb_Integer_Format){__VA_ARGS__}))
 
 #if CHAR_MIN < 0
-#  define SB_APPEND_NUMBER_FN_CHAR_CASE char : sb_append_integer_i8_fmt
+#  define SB_APPEND_NUMBER_FN_CHAR_CASE char : sb_append_i8_number_fmt
 #  define SB_APPEND_NUMBER_FN_SCHAR_CASE , SB_APPEND_NUMBER_FN_CHAR_CASE
 #  define SB_APPEND_NUMBER_FN_UCHAR_CASE
 #else
-#  define SB_APPEND_NUMBER_FN_CHAR_CASE char : sb_append_integer_u8_fmt
+#  define SB_APPEND_NUMBER_FN_CHAR_CASE char : sb_append_u8_number_fmt
 #  define SB_APPEND_NUMBER_FN_SCHAR_CASE
 #  define SB_APPEND_NUMBER_FN_UCHAR_CASE , SB_APPEND_NUMBER_FN_CHAR_CASE
 #endif
 
 #if SHRT_MAX == 32767
-#  define SB_APPEND_NUMBER_FN_SSHORT_CASE signed short : sb_append_integer_i16_fmt
-#  define SB_APPEND_NUMBER_FN_USHORT_CASE unsigned short : sb_append_integer_u16_fmt
+#  define SB_APPEND_NUMBER_FN_SSHORT_CASE signed short : sb_append_i16_number_fmt
+#  define SB_APPEND_NUMBER_FN_USHORT_CASE unsigned short : sb_append_u16_number_fmt
 #elif SHRT_MAX == 2147483647
-#  define SB_APPEND_NUMBER_FN_SSHORT_CASE signed short : sb_append_integer_i32_fmt
-#  define SB_APPEND_NUMBER_FN_USHORT_CASE unsigned short : sb_append_integer_u32_fmt
+#  define SB_APPEND_NUMBER_FN_SSHORT_CASE signed short : sb_append_i32_number_fmt
+#  define SB_APPEND_NUMBER_FN_USHORT_CASE unsigned short : sb_append_u32_number_fmt
 #else
 #  error "short size not supported"
 #endif
 #define SB_APPEND_NUMBER_FN_SHORT_CASE SB_APPEND_NUMBER_FN_SSHORT_CASE, SB_APPEND_NUMBER_FN_USHORT_CASE
 
 #if INT_MAX == 32767
-#  define SB_APPEND_NUMBER_FN_SINT_CASE signed int : sb_append_integer_i16_fmt
-#  define SB_APPEND_NUMBER_FN_UINT_CASE unsigned int : sb_append_integer_u16_fmt
+#  define SB_APPEND_NUMBER_FN_SINT_CASE signed int : sb_append_i16_number_fmt
+#  define SB_APPEND_NUMBER_FN_UINT_CASE unsigned int : sb_append_u16_number_fmt
 #elif INT_MAX == 2147483647
-#  define SB_APPEND_NUMBER_FN_SINT_CASE signed int : sb_append_integer_i32_fmt
-#  define SB_APPEND_NUMBER_FN_UINT_CASE unsigned int : sb_append_integer_u32_fmt
+#  define SB_APPEND_NUMBER_FN_SINT_CASE signed int : sb_append_i32_number_fmt
+#  define SB_APPEND_NUMBER_FN_UINT_CASE unsigned int : sb_append_u32_number_fmt
 #elif INT_MAX == 9223372036854775807
-#  define SB_APPEND_NUMBER_FN_SINT_CASE signed int : sb_append_integer_i64_fmt
-#  define SB_APPEND_NUMBER_FN_UINT_CASE unsigned int : sb_append_integer_u64_fmt
+#  define SB_APPEND_NUMBER_FN_SINT_CASE signed int : sb_append_i64_number_fmt
+#  define SB_APPEND_NUMBER_FN_UINT_CASE unsigned int : sb_append_u64_number_fmt
 #else
 #  error "int size not supported"
 #endif
 #define SB_APPEND_NUMBER_FN_INT_CASE SB_APPEND_NUMBER_FN_SINT_CASE, SB_APPEND_NUMBER_FN_UINT_CASE
 
 #if LONG_MAX == 2147483647
-#  define SB_APPEND_NUMBER_FN_SLONG_CASE signed long : sb_append_integer_i32_fmt
-#  define SB_APPEND_NUMBER_FN_ULONG_CASE unsigned long : sb_append_integer_u32_fmt
+#  define SB_APPEND_NUMBER_FN_SLONG_CASE signed long : sb_append_i32_number_fmt
+#  define SB_APPEND_NUMBER_FN_ULONG_CASE unsigned long : sb_append_u32_number_fmt
 #elif LONG_MAX == 9223372036854775807
-#  define SB_APPEND_NUMBER_FN_SLONG_CASE signed long : sb_append_integer_i64_fmt
-#  define SB_APPEND_NUMBER_FN_ULONG_CASE unsigned long : sb_append_integer_u64_fmt
+#  define SB_APPEND_NUMBER_FN_SLONG_CASE signed long : sb_append_i64_number_fmt
+#  define SB_APPEND_NUMBER_FN_ULONG_CASE unsigned long : sb_append_u64_number_fmt
 #else
 #  error "long size not supported"
 #endif
 #define SB_APPEND_NUMBER_FN_LONG_CASE SB_APPEND_NUMBER_FN_SLONG_CASE, SB_APPEND_NUMBER_FN_ULONG_CASE
 
 #if LLONG_MAX == 9223372036854775807
-#  define SB_APPEND_NUMBER_FN_SLLONG_CASE signed long long : sb_append_integer_i64_fmt
-#  define SB_APPEND_NUMBER_FN_ULLONG_CASE unsigned long long : sb_append_integer_u64_fmt
+#  define SB_APPEND_NUMBER_FN_SLLONG_CASE signed long long : sb_append_i64_number_fmt
+#  define SB_APPEND_NUMBER_FN_ULLONG_CASE unsigned long long : sb_append_u64_number_fmt
 #else
 #  error "long size not supported"
 #endif
 #define SB_APPEND_NUMBER_FN_LLONG_CASE SB_APPEND_NUMBER_FN_SLLONG_CASE, SB_APPEND_NUMBER_FN_ULLONG_CASE
 
 #if defined(__SIZEOF_INT128__)
-#  define SB_APPEND_NUMBER_FN_SI128_CASE , __int128_t : sb_append_integer_i128_fmt
-#  define SB_APPEND_NUMBER_FN_UI128_CASE , __uint128_t : sb_append_integer_u128_fmt
+#  define SB_APPEND_NUMBER_FN_SI128_CASE , __int128_t : sb_append_i128_number_fmt
+#  define SB_APPEND_NUMBER_FN_UI128_CASE , __uint128_t : sb_append_u128_number_fmt
 #  define SB_APPEND_NUMBER_FMT_SI128_CASE , __int128_t : ((Sb_Integer_Format){0})
 #  define SB_APPEND_NUMBER_FMT_UI128_CASE , __uint128_t : ((Sb_Integer_Format){0})
 #else
@@ -154,47 +154,47 @@ size_t sb_append_integer_u128_fmt(String_Builder *sb, __uint128_t value, Sb_Inte
 
 // clang-format off
 /** Polymorphic signed integers formatter. */
-#define sb_append_signed_integer_fmt(sb, value, fmt) _Generic((value), \
-  signed char: sb_append_integer_i8_fmt,                               \
-  SB_APPEND_NUMBER_FN_SSHORT_CASE,                                     \
-  SB_APPEND_NUMBER_FN_SINT_CASE,                                       \
-  SB_APPEND_NUMBER_FN_SLONG_CASE,                                      \
-  SB_APPEND_NUMBER_FN_SLLONG_CASE                                      \
-  SB_APPEND_NUMBER_FN_SCHAR_CASE                                       \
+#define sb_append_signed_integer_number_fmt(sb, value, fmt) _Generic((value), \
+  signed char: sb_append_i8_number_fmt,    \
+  SB_APPEND_NUMBER_FN_SSHORT_CASE,         \
+  SB_APPEND_NUMBER_FN_SINT_CASE,           \
+  SB_APPEND_NUMBER_FN_SLONG_CASE,          \
+  SB_APPEND_NUMBER_FN_SLLONG_CASE          \
+  SB_APPEND_NUMBER_FN_SCHAR_CASE           \
   SB_APPEND_NUMBER_FN_SI128_CASE)((sb), (value), (fmt))
 /** Polymorphic signed integers formatter with format options accepted as `__VA_ARGS__`. */
-#define sb_append_signed_integer(sb, value, ...) sb_append_signed_integer_fmt(sb, value, ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_signed_integer_number(sb, value, ...) sb_append_signed_integer_number_fmt(sb, value, ((Sb_Integer_Format){__VA_ARGS__}))
 
 /** Polymorphic unsigned integers formatter. */
-#define sb_append_unsigned_integer_fmt(sb, value, fmt) _Generic((value), \
-  unsigned char: sb_append_integer_u8_fmt,                               \
-  SB_APPEND_NUMBER_FN_USHORT_CASE,                                       \
-  SB_APPEND_NUMBER_FN_UINT_CASE,                                         \
-  SB_APPEND_NUMBER_FN_ULONG_CASE,                                        \
-  SB_APPEND_NUMBER_FN_ULLONG_CASE                                        \
-  SB_APPEND_NUMBER_FN_UCHAR_CASE                                         \
+#define sb_append_unsigned_integer_number_fmt(sb, value, fmt) _Generic((value), \
+  unsigned char: sb_append_u8_number_fmt,  \
+  SB_APPEND_NUMBER_FN_USHORT_CASE,         \
+  SB_APPEND_NUMBER_FN_UINT_CASE,           \
+  SB_APPEND_NUMBER_FN_ULONG_CASE,          \
+  SB_APPEND_NUMBER_FN_ULLONG_CASE          \
+  SB_APPEND_NUMBER_FN_UCHAR_CASE           \
   SB_APPEND_NUMBER_FN_UI128_CASE)((sb), (value), (fmt))
 /** Polymorphic unsigned integers formatter with format options accepted as `__VA_ARGS__`. */
-#define sb_append_unsigned_integer(sb, value, ...) sb_append_unsigned_integer_fmt(sb, value, ((Sb_Integer_Format){ __VA_ARGS__ }))
+#define sb_append_unsigned_integer_number(sb, value, ...) sb_append_unsigned_integer_number_fmt(sb, value, ((Sb_Integer_Format){ __VA_ARGS__ }))
 
 /** Polymorphic integers formatter. */
-#define sb_append_integer_fmt(sb, value, fmt) _Generic((value), \
-  SB_APPEND_NUMBER_FN_CHAR_CASE,                                \
-  signed char: sb_append_integer_i8_fmt,                        \
-  unsigned char: sb_append_integer_u8_fmt,                      \
-  SB_APPEND_NUMBER_FN_SHORT_CASE,                               \
-  SB_APPEND_NUMBER_FN_INT_CASE,                                 \
-  SB_APPEND_NUMBER_FN_LONG_CASE,                                \
-  SB_APPEND_NUMBER_FN_LLONG_CASE                                \
+#define sb_append_integer_number_fmt(sb, value, fmt) _Generic((value), \
+  SB_APPEND_NUMBER_FN_CHAR_CASE,           \
+  signed char: sb_append_i8_number_fmt,    \
+  unsigned char: sb_append_u8_number_fmt,  \
+  SB_APPEND_NUMBER_FN_SHORT_CASE,          \
+  SB_APPEND_NUMBER_FN_INT_CASE,            \
+  SB_APPEND_NUMBER_FN_LONG_CASE,           \
+  SB_APPEND_NUMBER_FN_LLONG_CASE           \
   SB_APPEND_NUMBER_FN_I128_CASE)((sb), (value), (fmt))
 /** Polymorphic integers formatter with format options accepted as `__VA_ARGS__`. */
-#define sb_append_integer(sb, value, ...) sb_append_integer_fmt(sb, value, ((Sb_Integer_Format){__VA_ARGS__}))
+#define sb_append_integer_number(sb, value, ...) sb_append_integer_number_fmt(sb, value, ((Sb_Integer_Format){__VA_ARGS__}))
 // clang-format on
 
-#endif // STR_INTEGER_H
+#endif // STR_INTEGERS_H
 
-#if defined(STR_INTEGER_IMPL) && !defined(STR_INTEGER_IMPL_C)
-#define STR_INTEGER_IMPL_C
+#if defined(STR_INTEGERS_IMPL) && !defined(STR_INTEGERS_IMPL_C)
+#define STR_INTEGERS_IMPL_C
 
 #define ABORT_IMPL
 #include <abort.h>
@@ -352,11 +352,11 @@ void __string_reverse(char *string, size_t width) {
   sb___format_padding_unsigned_integer(state, value, fmt, digits_start);                                                   \
   state.count;                                                                                                             \
 })
-size_t sb_append_integer_i8_fmt(String_Builder *sb, int8_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, INT8_MIN, 8, 3); }
-size_t sb_append_integer_i16_fmt(String_Builder *sb, int16_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, INT16_MIN, 16, 5); }
-size_t sb_append_integer_i32_fmt(String_Builder *sb, int32_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, INT32_MIN, 32, 10); }
-size_t sb_append_integer_i64_fmt(String_Builder *sb, int64_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, INT64_MIN, 64, 19); }
-size_t sb_append_integer_i128_fmt(String_Builder *sb, __int128_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, __INT128_MIN__, 128, 39); }
+size_t sb_append_i8_number_fmt(String_Builder *sb, int8_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, INT8_MIN, 8, 3); }
+size_t sb_append_i16_number_fmt(String_Builder *sb, int16_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, INT16_MIN, 16, 5); }
+size_t sb_append_i32_number_fmt(String_Builder *sb, int32_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, INT32_MIN, 32, 10); }
+size_t sb_append_i64_number_fmt(String_Builder *sb, int64_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, INT64_MIN, 64, 19); }
+size_t sb_append_i128_number_fmt(String_Builder *sb, __int128_t value, Sb_Integer_Format fmt) { return sb___append_signed_integer(sb, value, fmt, __INT128_MIN__, 128, 39); }
 #undef sb___append_signed_integer
 
 #define sb___append_unsigned_integer(sb, value, fmt, binary_width, decimal_width) ({                                   \
@@ -371,17 +371,17 @@ size_t sb_append_integer_i128_fmt(String_Builder *sb, __int128_t value, Sb_Integ
   sb___format_padding_unsigned_integer(state, value, fmt, digits_start);                                               \
   state.count;                                                                                                         \
 })
-size_t sb_append_integer_u8_fmt(String_Builder *sb, uint8_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 8, 3); }
-size_t sb_append_integer_u16_fmt(String_Builder *sb, uint16_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 16, 5); }
-size_t sb_append_integer_u32_fmt(String_Builder *sb, uint32_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 32, 10); }
-size_t sb_append_integer_u64_fmt(String_Builder *sb, uint64_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 64, 19); }
-size_t sb_append_integer_u128_fmt(String_Builder *sb, __uint128_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 128, 39); }
+size_t sb_append_u8_number_fmt(String_Builder *sb, uint8_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 8, 3); }
+size_t sb_append_u16_number_fmt(String_Builder *sb, uint16_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 16, 5); }
+size_t sb_append_u32_number_fmt(String_Builder *sb, uint32_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 32, 10); }
+size_t sb_append_u64_number_fmt(String_Builder *sb, uint64_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 64, 19); }
+size_t sb_append_u128_number_fmt(String_Builder *sb, __uint128_t value, Sb_Integer_Format fmt) { return sb___append_unsigned_integer(sb, value, fmt, 128, 39); }
 #undef sb___append_unsigned_integer
 #undef sb___unsigned_integer_max_width
 #undef sb___stringify_unsigned_integer
 #undef sb___format_padding_unsigned_integer
 
-#endif // STR_INTEGER_IMPL_C
+#endif // STR_INTEGERS_IMPL_C
 
 /**
  * This is free and unencumbered software released into the public domain.
