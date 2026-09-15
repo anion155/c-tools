@@ -9,7 +9,7 @@ The project provides typed dynamic arrays, string builders and views, UTF-8 help
 - [`da.h`](#dynamic-arrays) Typed dynamic arrays and slices
 - [`str.h`](#strings) String, string builder and non-owning string views
 - [`str_utf.h`](#strings-utf) UTF utilities for `str.h` library
-- [`str_integer.h`](#strings-integer) Integer utilities for `str.h` library
+- [`str_integers.h`](#strings-integer) Integer utilities for `str.h` library
 - `rc.h` Reference-counted and weak references
 - `nanoid`-style random identifiers
 - `floats.h` Floating-point representation and conversion helpers
@@ -155,7 +155,7 @@ The default initial capacity is `256` and can be overridden with `DA_INIT_CAP`.
 
 ## Strings
 
-[str.h](./str.h) based on [da.h](#dynamic-arrays) provides types and methods to effectively work with strings (heavily inspired by [@tsoding's](https://www.youtube.com/@TsodingDaily) String_Builder, String_View and his [nob.h](https://github.com/tsoding/nob.h)).
+[`str.h`](./str.h) based on [`da.h`](#dynamic-arrays) provides types and methods to effectively work with strings (heavily inspired by [@tsoding's](https://www.youtube.com/@TsodingDaily) String_Builder, String_View and his [nob.h](https://github.com/tsoding/nob.h)).
 
 Structures:
 - [`String_Builder`](./str.h#L44): dynamic array of characters.
@@ -345,7 +345,7 @@ if (sv_eq(op, sv_from_strlit("+"))) printf("Op is addition\n");
 
 ## Strings UTF
 
-[str_utf.h](./str_utf.h) provides utf related utilities.
+[`str_utf.h`](./str_utf.h) provides utf related utilities for [`str.h`](#strings).
 
 - [`utf8_character_lengths[0x100]`](./str_utf.h#L38): Array that maps every `char` value to utf8 bytes length.
 - [`sv_first_utf_length(sv)`](./str_utf.h#L41): Returns bytes length of first character in a `String_View`.
@@ -371,69 +371,134 @@ Example of usage:
 
 ## Strings Integers
 
-[str_integer.h](./str_integer.h) provides necessary functions to natively support integer numbers in `String_Builder`.
+[`str_integers.h`](./str_integers.h) provides necessary functions to natively support integer numbers for [`str.h`](#strings).
 
-- [`struct Sb_Integer_Format`](./str_integer.h#L49): Represents how integer must be formated in the string.
+- [`struct Sb_Integer_Format`](./str_integers.h#L49): Represents how integer must be formated in the string.
 
 Provides couple of integer number format kinds:
 
-- [`SB_INTEGER_FORMAT_KIND_DECIMAL`](./str_integer.h#L42): regular decimal format.
-- [`SB_INTEGER_FORMAT_KIND_BINARY`](./str_integer.h#L43): binary number format, provides default prefix `0b`.
-- [`SB_INTEGER_FORMAT_KIND_OCTAL`](./str_integer.h#L44): octal number format, provides default prefix `0o`.
-- [`SB_INTEGER_FORMAT_KIND_HEX`](./str_integer.h#L45): hex number format, using a-f alphadigits, provides default prefix `0x`.
-- [`SB_INTEGER_FORMAT_KIND_HEX_BIG`](./str_integer.h#L46): hex number format, using A-F alphadigits, provides default prefix `0x`.
+- [`SB_INTEGER_FORMAT_KIND_DECIMAL`](./str_integers.h#L42): regular decimal format.
+- [`SB_INTEGER_FORMAT_KIND_BINARY`](./str_integers.h#L43): binary number format, provides default prefix `0b`.
+- [`SB_INTEGER_FORMAT_KIND_OCTAL`](./str_integers.h#L44): octal number format, provides default prefix `0o`.
+- [`SB_INTEGER_FORMAT_KIND_HEX`](./str_integers.h#L45): hex number format, using a-f alphadigits, provides default prefix `0x`.
+- [`SB_INTEGER_FORMAT_KIND_HEX_BIG`](./str_integers.h#L46): hex number format, using A-F alphadigits, provides default prefix `0x`.
 
 And options:
 
-- [`hide_prefix`](./str_integer.h#L51): hides prefix, even if `prefix` provided.
-- [`prefix`](./str_integer.h#L52): custom prefix.
-- [`min_width`](./str_integer.h#L53): minimal width of whole resulting string, if too small will padd with spaces at string begining.
+- [`hide_prefix`](./str_integers.h#L51): hides prefix, even if `prefix` provided.
+- [`prefix`](./str_integers.h#L52): custom prefix.
+- [`min_width`](./str_integers.h#L53): minimal width of whole resulting string, if string is too small it will pad with spaces at string begining.
 
 Formatter functions:
 
-- [`sb_append_integer_i8_fmt(sb, value, fmt)`](./str_integer.h#L57): int8_t formatter.
-- [`sb_append_integer_i16_fmt(sb, value, fmt)`](./str_integer.h#L58): int16_t formatter.
-- [`sb_append_integer_i32_fmt(sb, value, fmt)`](./str_integer.h#L59): int32_t formatter.
-- [`sb_append_integer_i64_fmt(sb, value, fmt)`](./str_integer.h#L60): int64_t formatter.
-- [`sb_append_integer_i128_fmt(sb, value, fmt)`](./str_integer.h#L61): __int128_t formatter.
-- [`sb_append_integer_u8_fmt(sb, value, fmt)`](./str_integer.h#L70): uint8_t formatter.
-- [`sb_append_integer_u16_fmt(sb, value, fmt)`](./str_integer.h#L71): uint16_t formatter.
-- [`sb_append_integer_u32_fmt(sb, value, fmt)`](./str_integer.h#L72): uint32_t formatter.
-- [`sb_append_integer_u64_fmt(sb, value, fmt)`](./str_integer.h#L73): uint64_t formatter.
-- [`sb_append_integer_u128_fmt(sb, value, fmt)`](./str_integer.h#L74): __uint128_t formatter.
+- [`sb_append_i8_number_fmt(sb, value, fmt)`](./str_integers.h#L57): int8_t formatter.
+- [`sb_append_i16_number_fmt(sb, value, fmt)`](./str_integers.h#L58): int16_t formatter.
+- [`sb_append_i32_number_fmt(sb, value, fmt)`](./str_integers.h#L59): int32_t formatter.
+- [`sb_append_i64_number_fmt(sb, value, fmt)`](./str_integers.h#L60): int64_t formatter.
+- [`sb_append_i128_number_fmt(sb, value, fmt)`](./str_integers.h#L61): __int128_t formatter.
+- [`sb_append_u8_number_fmt(sb, value, fmt)`](./str_integers.h#L70): uint8_t formatter.
+- [`sb_append_u16_number_fmt(sb, value, fmt)`](./str_integers.h#L71): uint16_t formatter.
+- [`sb_append_u32_number_fmt(sb, value, fmt)`](./str_integers.h#L72): uint32_t formatter.
+- [`sb_append_u64_number_fmt(sb, value, fmt)`](./str_integers.h#L73): uint64_t formatter.
+- [`sb_append_u128_number_fmt(sb, value, fmt)`](./str_integers.h#L74): __uint128_t formatter.
 
 All formatters function also have `struct as macro __VA_ARGS__` variant
 
-- [`sb_append_integer_i8(sb, value, ...fmt_fields)`](./str_integer.h#L63): int8_t formatter.
-- [`sb_append_integer_i16(sb, value, ...fmt_fields)`](./str_integer.h#L64): int16_t formatter.
-- [`sb_append_integer_i32(sb, value, ...fmt_fields)`](./str_integer.h#L65): int32_t formatter.
-- [`sb_append_integer_i64(sb, value, ...fmt_fields)`](./str_integer.h#L66): int64_t formatter.
-- [`sb_append_integer_i128(sb, value, ...fmt_fields)`](./str_integer.h#L67): __int128_t formatter.
-- [`sb_append_integer_u8(sb, value, ...fmt_fields)`](./str_integer.h#L76): uint8_t formatter.
-- [`sb_append_integer_u16(sb, value, ...fmt_fields)`](./str_integer.h#L77): uint16_t formatter.
-- [`sb_append_integer_u32(sb, value, ...fmt_fields)`](./str_integer.h#L78): uint32_t formatter.
-- [`sb_append_integer_u64(sb, value, ...fmt_fields)`](./str_integer.h#L79): uint64_t formatter.
-- [`sb_append_integer_u128(sb, value, ...fmt_fields)`](./str_integer.h#L80): __uint128_t formatter.
+- [`sb_append_i8_number(sb, value, ...fmt_fields)`](./str_integers.h#L63): int8_t formatter.
+- [`sb_append_i16_number(sb, value, ...fmt_fields)`](./str_integers.h#L64): int16_t formatter.
+- [`sb_append_i32_number(sb, value, ...fmt_fields)`](./str_integers.h#L65): int32_t formatter.
+- [`sb_append_i64_number(sb, value, ...fmt_fields)`](./str_integers.h#L66): int64_t formatter.
+- [`sb_append_i128_number(sb, value, ...fmt_fields)`](./str_integers.h#L67): __int128_t formatter.
+- [`sb_append_u8_number(sb, value, ...fmt_fields)`](./str_integers.h#L76): uint8_t formatter.
+- [`sb_append_u16_number(sb, value, ...fmt_fields)`](./str_integers.h#L77): uint16_t formatter.
+- [`sb_append_u32_number(sb, value, ...fmt_fields)`](./str_integers.h#L78): uint32_t formatter.
+- [`sb_append_u64_number(sb, value, ...fmt_fields)`](./str_integers.h#L79): uint64_t formatter.
+- [`sb_append_u128_number(sb, value, ...fmt_fields)`](./str_integers.h#L80): __uint128_t formatter.
 
 And there is also polymorphic variants:
 
-- [`sb_append_signed_integer_fmt(sb, value, fmt)`](./str_integer.h#L143): polymorphic signed integer types formatter.
-- [`sb_append_signed_integer(sb, value, ...fmt_args)`](./str_integer.h#L152): polymorphic signed integer types formatter.
-- [`sb_append_unsigned_integer_fmt(sb, value, fmt)`](./str_integer.h#L155): polymorphic unsigned integer types formatter.
-- [`sb_append_unsigned_integer(sb, value, ...fmt_args)`](./str_integer.h#L164): polymorphic unsigned integer types formatter.
-- [`sb_append_integer_fmt(sb, value, fmt)`](./str_integer.h#L167): polymorphic integer types formatter.
-- [`sb_append_integer(sb, value, ...fmt_args)`](./str_integer.h#L177): polymorphic integer types formatter.
+- [`sb_append_signed_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L143): polymorphic signed integer types formatter.
+- [`sb_append_signed_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L152): polymorphic signed integer types formatter.
+- [`sb_append_unsigned_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L155): polymorphic unsigned integer types formatter.
+- [`sb_append_unsigned_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L164): polymorphic unsigned integer types formatter.
+- [`sb_append_integer_number_fmt(sb, value, fmt)`](./str_integers.h#L167): polymorphic integer types formatter.
+- [`sb_append_integer_number(sb, value, ...fmt_args)`](./str_integers.h#L177): polymorphic integer types formatter.
+
 Example of usage:
 
 ```c
-#define STR_INTEGER_IMPL
-#include "str_integer.h"
+#define STR_INTEGERS_IMPL
+#include "str_integers.h"
 
 int main(void) {
   String_Builder sb = {0};
-  sb_append_integer(&sb, (long)120349);
-  sb_append_integer(&sb, (long long)120349, .kind = SB_INTEGER_FORMAT_KIND_HEX);
-  sb_append_integer(&sb, (char)126, .kind = SB_INTEGER_FORMAT_KIND_BINARY);
+  sb_append_integer_number(&sb, (long)120349);
+  sb_append_integer_number(&sb, (long long)120349, .kind = SB_INTEGER_FORMAT_KIND_HEX);
+  sb_append_integer_number(&sb, (char)126, .kind = SB_INTEGER_FORMAT_KIND_BINARY);
+}
+```
+
+## Strings Floats
+
+[`str_floats.h`](./str_floats.h) provides necessary functions to natively support floating point numbers in `String_Builder` for [`str.h`](#strings).
+It is using ryu algorithm to parse floating number, actual implementation of Ulf Adams from https://github.com/ulfjack/ryu.
+
+- [`struct Sb_Floating_Format`](./str_floats.h#L49): Represents how floating point number must be formated in the string.
+
+Provides couple of integer number format kinds:
+
+- [`SB_FLOATING_FORMAT_KIND_DECIMAL`](./str_floats.h#L42): regular decimal format.
+- [`SB_FLOATING_FORMAT_KIND_FIXED`](./str_floats.h#L43): fixed decimal format.
+- [`SB_FLOATING_FORMAT_KIND_HEX`](./str_floats.h#L45): hex mantissa format, using a-f alphadigits.
+- [`SB_FLOATING_FORMAT_KIND_HEX_BIG`](./str_floats.h#L46): hex mantissa format, using A-F alphadigits.
+
+And options:
+
+- [`min_width`](./str_floats.h#L53): minimal width of whole resulting string, if string is too small it will pad with spaces at string begining.
+- [`precision`](./str_floats.h#L53): precision for fixed format.
+
+Formatter functions:
+
+- [`sb_append_f16_number_fmt(sb, f16_t value, fmt)`](./str_floats.h#L) f16_t formatter
+- [`sb_append_f32_number_fmt(sb, float value, fmt)`](./str_floats.h#L) float formatter
+- [`sb_append_f64_number_fmt(sb, double value, fmt)`](./str_floats.h#L) double formatter
+- [`sb_append_f80_number_fmt(sb, f80_t value, fmt)`](./str_floats.h#L) f80_t formatter
+- [`sb_append_f128_number_fmt(sb, f128_t value, fmt)`](./str_floats.h#L) f128_t formatter
+- [`sb_append_f64pair_number_fmt(sb, f64pair_t value, fmt)`](./str_floats.h#L) f64pair_t formatter
+- [`sb_append_f16_canonical_number_fmt(sb, f16_canonical_t value, fmt)`](./str_floats.h#L) f16_canonical_t formatter
+- [`sb_append_f80_canonical_number_fmt(sb, f80_canonical_t value, fmt)`](./str_floats.h#L) f80_canonical_t formatter
+- [`sb_append_f128_canonical_number_fmt(sb, f128_canonical_t value, fmt)`](./str_floats.h#L) f128_canonical_t formatter
+- [`sb_append_f64pair_canonical_number_fmt(sb, f64pair_canonical_t value, fmt)`](./str_floats.h#L) f64pair_canonical_t formatter
+
+All formatters function also have `struct as macro __VA_ARGS__` variant
+
+- [`sb_append_f16_number(sb, f16_t value, ...fmt_args)`](./str_floats.h#L) f16_t formatter
+- [`sb_append_f32_number(sb, float value, ...fmt_args)`](./str_floats.h#L) float formatter
+- [`sb_append_f64_number(sb, double value, ...fmt_args)`](./str_floats.h#L) double formatter
+- [`sb_append_f80_number(sb, f80_t value, ...fmt_args)`](./str_floats.h#L) f80_t formatter
+- [`sb_append_f128_number(sb, f128_t value, ...fmt_args)`](./str_floats.h#L) f128_t formatter
+- [`sb_append_f64pair_number(sb, f64pair_t value, ...fmt_args)`](./str_floats.h#L) f64pair_t formatter
+- [`sb_append_f16_canonical_number(sb, f16_canonical_t value, ...fmt_args)`](./str_floats.h#L) f16_canonical_t formatter
+- [`sb_append_f80_canonical_number(sb, f80_canonical_t value, ...fmt_args)`](./str_floats.h#L) f80_canonical_t formatter
+- [`sb_append_f128_canonical_number(sb, f128_canonical_t value, ...fmt_args)`](./str_floats.h#L) f128_canonical_t formatter
+- [`sb_append_f64pair_canonical_number(sb, f64pair_canonical_t value, ...fmt_args)`](./str_floats.h#L) f64pair_canonical_t formatter
+
+And there is also polymorphic variants:
+
+- [`sb_append_floating_number_fmt(sb, value, fmt)`](./str_floats.h#L167): polymorphic floating types formatter.
+- [`sb_append_floating_number(sb, value, ...fmt_args)`](./str_floats.h#L177): polymorphic floating types formatter.
+
+Example of usage:
+
+```c
+#define STR_FLOATS_IMPL
+#include "str_floats.h"
+
+int main(void) {
+  String_Builder sb = {0};
+  sb_append_floating_number(&sb, (__Float16)120.3);
+  sb_append_floating_number(&sb, (float)120.349, .kind = SB_INTEGER_FORMAT_KIND_HEX);
+  sb_append_floating_number(&sb, (double)120.349, .kind = SB_INTEGER_FORMAT_KIND_FIXED, .precision = 5);
 }
 ```
 
