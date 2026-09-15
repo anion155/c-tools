@@ -555,6 +555,10 @@ any kind of number, using [`str_integers.h`](#strings-integers) and [`str_floats
 - [`sb_append_number_fmt(sb, value, fmt)`](./str_numbers.h#L167): polymorphic floating types formatter.
 - [`sb_append_number(sb, value, ...fmt_args)`](./str_numbers.h#L177): polymorphic floating types formatter.
 
+## Defines
+
+## Abort
+
 ## Reference counting
 
 [rc.h](./rc.h) provides strong and weak references with optional destructors and
@@ -591,7 +595,7 @@ Important operations include:
 - `rc_weak_free`
 - `rc_guarded`
 
-## Random identifiers
+## nanoid
 
 [nanoid.h](./nanoid.h) generates random identifiers using rand().
 
