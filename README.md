@@ -9,9 +9,9 @@ The project provides typed dynamic arrays, string builders and views, UTF-8 help
 - [`da.h`](#dynamic-arrays) Typed dynamic arrays and slices
 - [`str.h`](#strings) String, string builder and non-owning string views
 - [`str_utf.h`](#strings-utf) UTF utilities for `str.h` library
-- [`str_integers.h`](#strings-integer) Integer utilities for `str.h` library
-- [`str_floats.h`](#strings-floats) Floating utilities for `str.h` library
-- [`str_numbers.h`](#strings-numbers) Number utilities for `str.h` library
+- [`str_integers.h`](#stringify-integers) Integer utilities for `str.h` library
+- [`str_floats.h`](#stringify-floats) Floating utilities for `str.h` library
+- [`str_numbers.h`](#stringify-numbers) Number utilities for `str.h` library
 - `rc.h` Reference-counted and weak references
 - `nanoid`-style random identifiers
 - `floats.h` Floating-point representation and conversion helpers
@@ -112,46 +112,52 @@ int main(void) {
 ```
 
 Structure creation helpers:
-- [`Da(Value_Type, [struct_name])`](./da.h#L15): represents array that can grow dynamically, owns data, and requires freeing after use.
-- [`Da_Slice(Value_Type, [struct_name])`](./da.h#L22): represents slice of an array, does not own data.
-- [`Da_Const(Value_Type, [struct_name])`](./da.h#L28): represents constant size array compatible with da_any_ methods
+- [`Da(Value_Type, [struct_name])`](./da.h#L44): represents array that can grow dynamically, owns data, and requires freeing after use.
+- [`Da_Slice(Value_Type, [struct_name])`](./da.h#L54): represents slice of an array, does not own data.
+- [`Da_Const(Value_Type, [struct_name])`](./da.h#L63): represents constant size array compatible with da_any_ methods
 
 Useful operations include:
 
-- [`da_first(da)`](./da.h#L69): Returns the first element of the dynamic array.
-- [`da_last(da)`](./da.h#L78): Returns the last element of the dynamic array.
-- [`da_at(da, index)`](./da.h#L87): Returns the element at `index`.
-- [`da_foreach(da, id)`](./da.h#L97): Iterates over `da`, creating a pointer loop variable named `id` and index `id##_index`.
-- [`da_find_expr(da, id, expr)`](./da.h#L112): Returns index of first element satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or array's size if not found.
-- [`da_find_pred(da, predicate)`](./da.h#L135): Returns index of first element satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or array's size if not found.
-- [`da_find_right_expr(da, id, expr)`](./da.h#L155): Returns `index + 1` of first element from the end satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or `0` if not found.
-- [`da_find_right_pred(da, predicate)`](./da.h#L178): Returns `index + 1` of first element from the end satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or `0` if not found.
-- [`da_free(da)`](./da.h#L196): Frees `data` buffer, zeroes `capacity` and `count`, and resets pointer to `NULL`.
-- [`da_reserve(da, target_capacity)`](./da.h#L209): Ensures capacity is at least `target_capacity` by doubling capacity geometrically.
-- [`da_reserve_exact(da, target_capacity)`](./da.h#L223): Reallocates capacity to exactly `target_capacity` if needed without geometric growth.
-- [`da_trim_realloc(da)`](./da.h#L236): Shrinks memory allocation so `capacity` matches `count`, or frees if `count == 0`.
-- [`da_resize(da, new_size)`](./da.h#L253): Reserves memory for `new_size` and sets `count = new_size`.
-- [`da_append(da, item)`](./da.h#L261): Appends a single `item` to the dynamic array, growing capacity if necessary.
-- [`da_append_many_n(da, new_items, new_count)`](./da.h#L272): Appends `new_count` elements from buffer `new_items`.
-- [`da_append_many(da, [item1, item2, ...])`](./da.h#L284): Appends variadic literal items to `da`.
-- [`da_pop(da)`](./da.h#L297): Returns the last element and decrements `count`.
-- [`da_remove_unordered(da, index)`](./da.h#L307): Removes element at `index` by swapping it with the last element.
-- [`da_remove_ordered(da, index)`](./da.h#L317): Removes element at `index` by moving all further elements left.
-- [`da_slice_init(da, [start], [count])`](./da.h#L326): Struct initializer expression for slices, with optional `start` (default `0`) and `count` (defaults to remaining elements).
-- [`da_slice(da, Slice_Type, [start], [count])`](./da.h#L331): Returns a slice of `Slice_Type` starting at `start` (default `0`) for `count` elements (default remaining elements).
-- [`da_slice_whole(da, Slice_Type)`](./da.h#L345): Creates a `Slice_Type` putting in it full range of `da`.
-- [`da_slice_shift(das)`](./da.h#L353): Shifts slice head forward by 1, decrements `count`, and returns the dropped first element.
-- [`da_slice_chop_left(das, [n])`](./da.h#L364): Advances slice head past `n` elements (default `1`) and returns a new slice containing the chopped prefix.
-- [`da_slice_chop_right(das, [n])`](./da.h#L376): Shrinks slice tail by `n` elements (default `1`) and returns a new slice containing the chopped suffix.
-- [`da_slice_chop_while_expr(das, id, expr)`](./da.h#L395): Chops and returns prefix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
-- [`da_slice_chop_while_pred(das, predicate)`](./da.h#L404): Chops and returns prefix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
-- [`da_slice_chop_right_while_expr(das, id, expr)`](./da.h#L418): Chops and returns suffix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
-- [`da_slice_chop_right_while_pred(das, predicate)`](./da.h#L427): Chops and returns suffix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
-- [`da_slice_chop_by_delim_expr(das, id, expr)`](./da.h#L440): Chops slice up to the first element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
-- [`da_slice_chop_by_delim_pred(das, predicate)`](./da.h#L458): Chops slice up to the first element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
-- [`da_slice_chop_right_by_delim_expr(das, id, expr)`](./da.h#L479): Chops slice from the end up to the last element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
-- [`da_slice_chop_right_by_delim_pred(das, predicate)`](./da.h#L498): Chops slice from the end up to the last element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
-- [`da_const_init_from_arraylit(Value_Type, [item1, item2, ...])`](./da.h#L506): Constructs a read-only dynamic array compatible structure initialized from a compound literal array.
+- [`da_first(da)`](./da.h#L73): Returns the first element of the dynamic array.
+- [`da_last(da)`](./da.h#L82): Returns the last element of the dynamic array.
+- [`da_at(da, index)`](./da.h#L91): Returns the element at `index`.
+- [`da_foreach(da, id)`](./da.h#L101): Iterates over `da`, creating a pointer loop variable named `id` and index `id##_index`.
+- [`da_find_expr(da, id, expr)`](./da.h#L116): Returns index of first element satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or array's size if not found.
+- [`da_find_pred(da, predicate)`](./da.h#L139): Returns index of first element satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or array's size if not found.
+- [`da_find_right_expr(da, id, expr)`](./da.h#L159): Returns `index + 1` of first element from the end satisfying `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`), or `0` if not found.
+- [`da_find_right_pred(da, predicate)`](./da.h#L182): Returns `index + 1` of first element from the end satisfying `predicate` (function or macro that accepts (Value_Type item, size_t index)), or `0` if not found.
+- [`da_free(da)`](./da.h#L201): Frees `data` buffer, zeroes `capacity` and `count`, and resets pointer to `NULL`.
+- [`da_reserve(da, target_capacity)`](./da.h#L214): Ensures capacity is at least `target_capacity` by doubling capacity geometrically.
+- [`da_reserve_exact(da, target_capacity)`](./da.h#L228): Reallocates capacity to exactly `target_capacity` if needed without geometric growth.
+- [`da_trim_realloc(da)`](./da.h#L241): Shrinks memory allocation so `capacity` matches `count`, or frees if `count == 0`.
+- [`da_resize(da, new_size)`](./da.h#L258): Reserves memory for `new_size` and sets `count = new_size`.
+- [`da_append(da, item)`](./da.h#L266): Appends a single `item` to the dynamic array, growing capacity if necessary.
+- [`da_append_many_n(da, new_items, new_count)`](./da.h#L277): Appends `new_count` elements from buffer `new_items`.
+- [`da_append_many(da, [item1, item2, ...])`](./da.h#L289): Appends variadic literal items to `da`.
+- [`da_pop(da)`](./da.h#L302): Returns the last element and decrements `count`.
+- [`da_remove_unordered(da, index)`](./da.h#L312): Removes element at `index` by swapping it with the last element.
+- [`da_remove_ordered(da, index)`](./da.h#L322): Removes element at `index` by moving all further elements left.
+
+Slice methods:
+
+- [`da_slice_init(da, [start], [count])`](./da.h#L331): Struct initializer expression for slices, with optional `start` (default `0`) and `count` (defaults to remaining elements).
+- [`da_slice(da, Slice_Type, [start], [count])`](./da.h#L336): Returns a slice of `Slice_Type` starting at `start` (default `0`) for `count` elements (default remaining elements).
+- [`da_slice_whole(da, Slice_Type)`](./da.h#L350): Creates a `Slice_Type` putting in it full range of `da`.
+- [`da_slice_shift(das)`](./da.h#L358): Shifts slice head forward by 1, decrements `count`, and returns the dropped first element.
+- [`da_slice_chop_left(das, [n])`](./da.h#L369): Advances slice head past `n` elements (default `1`) and returns a new slice containing the chopped prefix.
+- [`da_slice_chop_right(das, [n])`](./da.h#L381): Shrinks slice tail by `n` elements (default `1`) and returns a new slice containing the chopped suffix.
+- [`da_slice_chop_while_expr(das, id, expr)`](./da.h#L400): Chops and returns prefix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_while_pred(das, predicate)`](./da.h#L409): Chops and returns prefix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
+- [`da_slice_chop_right_while_expr(das, id, expr)`](./da.h#L423): Chops and returns suffix of a slice while elements satisfy `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`).
+- [`da_slice_chop_right_while_pred(das, predicate)`](./da.h#L432): Chops and returns suffix of a slice while elements satisfy `predicate` (function or macro that accepts (Value_Type item, size_t index)).
+- [`da_slice_chop_by_delim_expr(das, id, expr)`](./da.h#L445): Chops slice up to the first element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_by_delim_pred(das, predicate)`](./da.h#L466): Chops slice up to the first element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0` and `data` pointed to memory after last character, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_right_by_delim_expr(das, id, expr)`](./da.h#L480): Chops slice from the end up to the last element matching `expr` (as tokens with available variables: `id` pointer to item, `id##_index`, `id##_data`, `id##_count`). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
+- [`da_slice_chop_right_by_delim_pred(das, predicate)`](./da.h#L501): Chops slice from the end up to the last element matching `predicate` (function or macro that accepts (Value_Type item, size_t index)). If not found `das` gona be `.count = 0`, and returned `.count = das.count, .data = NULL`.
+
+Const array methods:
+
+- [`da_const_init_from_arraylit(Value_Type, [item1, item2, ...])`](./da.h#L509): Constructs a read-only dynamic array compatible structure initialized from a compound literal array.
 
 The default initial capacity is `256` and can be overridden with `DA_INIT_CAP`.
 
@@ -414,7 +420,7 @@ Example of usage:
   }
 ```
 
-## Strings Integers
+## Stringify Integers
 
 [`str_integers.h`](./str_integers.h) provides necessary functions to natively support integer numbers for [`str.h`](#strings).
 
@@ -483,7 +489,7 @@ int main(void) {
 }
 ```
 
-## Strings Floats
+## Stringify Floats
 
 [`str_floats.h`](./str_floats.h) provides necessary functions to natively support floating point numbers in `String_Builder` for [`str.h`](#strings).
 It is using ryu algorithm to parse floating number, actual implementation of Ulf Adams from https://github.com/ulfjack/ryu.
@@ -547,7 +553,7 @@ int main(void) {
 }
 ```
 
-## Strings numbers
+## Stringify Numbers
 
 [`str_numbers.h`](./str_numbers.h) provides convinient polymorphic function to stringify
 any kind of number, using [`str_integers.h`](#strings-integers) and [`str_floats.h`](#strings-floats).
@@ -556,6 +562,10 @@ any kind of number, using [`str_integers.h`](#strings-integers) and [`str_floats
 - [`sb_append_number(sb, value, ...fmt_args)`](./str_numbers.h#L177): polymorphic floating types formatter.
 
 ## Defines
+
+[`defines.h`](./defines.h) provides preprocessor utilities.
+
+- [``](./str_numbers.h#L167): polymorphic floating types formatter.
 
 ## Abort
 
