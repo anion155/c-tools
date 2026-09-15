@@ -63,8 +63,8 @@ typedef struct Sb_Floating_Format {
 
 /** Floating formatter functions. */
 size_t sb_append_f16_number_fmt(String_Builder *sb, f16_t value, Sb_Floating_Format fmt);
-size_t sb_append_f32_number_fmt(String_Builder *sb, float value, Sb_Floating_Format fmt);
-size_t sb_append_f64_number_fmt(String_Builder *sb, double value, Sb_Floating_Format fmt);
+size_t sb_append_f32_number_fmt(String_Builder *sb, f32_t value, Sb_Floating_Format fmt);
+size_t sb_append_f64_number_fmt(String_Builder *sb, f64_t value, Sb_Floating_Format fmt);
 size_t sb_append_f80_number_fmt(String_Builder *sb, f80_t value, Sb_Floating_Format fmt);
 size_t sb_append_f128_number_fmt(String_Builder *sb, f128_t value, Sb_Floating_Format fmt);
 size_t sb_append_f64pair_number_fmt(String_Builder *sb, f64pair_t value, Sb_Floating_Format fmt);
@@ -360,8 +360,8 @@ void sb___floating_format_width(Stringify_State *state, Sb_Floating_Format *fmt,
 })
 
 size_t sb_append_f16_number_fmt(String_Builder *sb, f16_t value, Sb_Floating_Format fmt) { return sb___append_ryu_generic_floating(sb, value, fmt, f16, 8); }
-size_t sb_append_f32_number_fmt(String_Builder *sb, float value, Sb_Floating_Format fmt) { return sb___append_ryu_floating(sb, value, fmt, 32, 16); }
-size_t sb_append_f64_number_fmt(String_Builder *sb, double value, Sb_Floating_Format fmt) { return sb___append_ryu_floating(sb, value, fmt, 64, 27); }
+size_t sb_append_f32_number_fmt(String_Builder *sb, f32_t value, Sb_Floating_Format fmt) { return sb___append_ryu_floating(sb, value, fmt, 32, 16); }
+size_t sb_append_f64_number_fmt(String_Builder *sb, f64_t value, Sb_Floating_Format fmt) { return sb___append_ryu_floating(sb, value, fmt, 64, 27); }
 size_t sb_append_f80_number_fmt(String_Builder *sb, f80_t value, Sb_Floating_Format fmt) { return sb___append_ryu_generic_floating(sb, value, fmt, f80, 36); }
 size_t sb_append_f128_number_fmt(String_Builder *sb, f128_t value, Sb_Floating_Format fmt) { return sb___append_ryu_generic_floating(sb, value, fmt, f128, 36); }
 size_t sb_append_f64pair_number_fmt(String_Builder *sb, f64pair_t value, Sb_Floating_Format fmt) { return sb___append_ryu_generic_floating(sb, value, fmt, f64pair, 36); }
@@ -413,6 +413,8 @@ size_t sb_append_f64pair_canonical_number_fmt(String_Builder *sb, f64pair_canoni
 #undef sb___ryu_floating_to_hex_chars
 #undef sb___append_ryu_floating
 
+#endif // STR_FLOATS_IMPL_C
+
 /**
  * This is free and unencumbered software released into the public domain.
  *
@@ -439,8 +441,6 @@ size_t sb_append_f64pair_canonical_number_fmt(String_Builder *sb, f64pair_canoni
  *
  * For more information, please refer to <https://unlicense.org/>
  */
-
-#endif // STR_FLOATS_IMPL_C
 
 /**
  * Next part of the file is an actual implementation of ryu algorithm.

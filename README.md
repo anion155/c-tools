@@ -153,6 +153,49 @@ Useful operations include:
 
 The default initial capacity is `256` and can be overridden with `DA_INIT_CAP`.
 
+## Floats
+
+[`floats.h`](./floats.h) provides fixed width float types, also tryies to solve `long double` state in c language.
+
+First of all it declares canonical float types for f16, f80 (IEEE 754 Extended Precision), f128 (IEEE 754 Quadruple Precision), f64pair (IBM double-double).
+Then it decides which types actually repressents `f16_t`, `f80_t`, `f128_t`, `f64pair_t` types, canonical repressentation or actual native types.
+
+It defines constants:
+
+- `FLOATS_LD_KIND_F64 = 0`: is when `long double` is same as `double`
+- `FLOATS_LD_KIND_F80 = 1`: is when `long double` is IEEE 754 Extended Precision
+- `FLOATS_LD_KIND_F128 = 2`: is when `long double` is IEEE 754 Quadruple Precision
+- `FLOATS_LD_KIND_F64PAIR = 3`: is when `long double` is IBM double-double
+- `FLOATS_LD_KIND`: is actual detected type
+
+Example of usage:
+
+```c
+#if FLOATS_LD_KIND == FLOATS_LD_KIND_F64
+#  message "long double is IEEE 754 Double Precision"
+#elif FLOATS_LD_KIND == FLOATS_LD_KIND_F80
+#  message "long double is IEEE 754 Extended Precision"
+#elif FLOATS_LD_KIND == FLOATS_LD_KIND_F128
+#  message "long double is IEEE 754 Quadruple Precision"
+#elif FLOATS_LD_KIND == FLOATS_LD_KIND_F64PAIR
+#  message "long double is IBM double-double"
+#else
+#  error "Unsupported or unknown long double architecture."
+#endif
+```
+
+- `f16_canonical_t`: structure which has guaranteed size of 16 bits.
+- `f80_canonical_t`: structure which has guaranteed size of 80 bits.
+- `f128_canonical_t`: structure which has guaranteed size of 128 bits.
+- `f64pair_canonical_t`: structure which has guaranteed size of 128 bits but also can be parsed as two consequtive doubles.
+
+- `f16_t`: can be either native `_Float16` or `f16_canonical_t`
+- `f32_t`: is always native `float`
+- `f64_t`: is always native `double`
+- `f80_t`: can be either native `long double` or `f80_canonical_t`
+- `f128_t`: can be either native `long double` or `f128_canonical_t`
+- `f64pair_t`: can be either native `long double` or `f64pair_canonical_t`
+
 ## Strings
 
 [`str.h`](./str.h) based on [`da.h`](#dynamic-arrays) provides types and methods to effectively work with strings (heavily inspired by [@tsoding's](https://www.youtube.com/@TsodingDaily) String_Builder, String_View and his [nob.h](https://github.com/tsoding/nob.h)).
