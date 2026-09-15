@@ -5,19 +5,19 @@
  *
  * ## Usage example
  * ```c
-   #include "da.h"
+  #include "da.h"
 
-   typedef Da(int, Int_Array) Int_Array;
+  typedef Da(int, Int_Array) Int_Array;
 
-   int main(void) {
-     Int_Array values = {0};
-     da_append(&values, 10);
-     da_append_many(&values, 20, 30, 40);
-     da_foreach(values, value) {
-       printf("%d\n", *value);
-     }
-     da_free(&values);
-   }
+  int main(void) {
+    Int_Array values = {0};
+    da_append(&values, 10);
+    da_append_many(&values, 20, 30, 40);
+    da_foreach(values, value) {
+      printf("%d\n", *value);
+    }
+    da_free(&values);
+  }
  * ```
  *
  * ## Requirements

@@ -6,8 +6,8 @@ The project provides typed dynamic arrays, string builders and views, UTF-8 help
 
 ## Features
 
-- `da.h` Typed dynamic arrays and slices
-- `sb.h` String builders and non-owning string views
+- [`da.h`](#dynamic-arrays) Typed dynamic arrays and slices
+- [`str.h`](#strings) String, string builder and non-owning string views
 - `utf.h` UTF-8 character-length lookup
 - `rc.h` Reference-counted and weak references
 - `nanoid`-style random identifiers
@@ -109,9 +109,9 @@ int main(void) {
 ```
 
 Structure creation helpers:
-- [`Da(Value_Type, [struct_name])`](./da.h#L15 "Da") - represents array that can grow dynamically, owns data, and requires freeing after use.
-- [`Da_Slice(Value_Type, [struct_name])`](./da.h#L22 "Da_Slice") - represents slice of an array, does not own data.
-- [`Da_Const(Value_Type, [struct_name])`](./da.h#L28 "Da_Const") - represents constant size array compatible with da_any_ methods
+- [`Da(Value_Type, [struct_name])`](./da.h#L15): represents array that can grow dynamically, owns data, and requires freeing after use.
+- [`Da_Slice(Value_Type, [struct_name])`](./da.h#L22): represents slice of an array, does not own data.
+- [`Da_Const(Value_Type, [struct_name])`](./da.h#L28): represents constant size array compatible with da_any_ methods
 
 Useful operations include:
 
@@ -154,49 +154,191 @@ The default initial capacity is `256` and can be overridden with `DA_INIT_CAP`.
 
 ## Strings
 
-[sb.h](./sb.h) provides:
+[str.h](./str.h) based on [da.h](#dynamic-arrays) provides types and methods to effectively work with strings (heavily inspired by [@tsoding's](https://www.youtube.com/@TsodingDaily) String_Builder, String_View and his [nob.h](https://github.com/tsoding/nob.h)).
 
-- `String_Builder`: an owning, growable character buffer
-- `String_View`: a non-owning character slice
-- `String`: an immutable character slice
+Structures:
+- [`String_Builder`](./str.h#L15): dynamic array of characters.
+- [`String_View`](./str.h#L22): slice view to array of characters.
+- [`String`](./str.h#L28): immutable string container.
+- [`Stringify_State`](./str.h#L28): helper structure to create custom `sb_append_` compatible functions
 
 ```c
-#define SB_IMPL
-#include "sb.h"
-
-#include <stdio.h>
+#define STR_IMPL
+#include "str.h"
 
 int main(void) {
-  String_Builder builder = {0};
+  String_Builder sb = {0};
+  sb_append_strlit(&values, "test");
+  sb_append(&values, ':');
+  sb_appendf(&values, " %d", 10);
+  printf("sb: capacity: %zu, count: %zu, data: '"SV_FMT"'", values.capacity, values.count, sv_fmt_arg(values));
 
-  sb_append_cstr(&builder, "value: ");
-  sb_appendf(&builder, "%d", 42);
+  String str = string_from_sb(&sb);
+  printf("sb: capacity: %zu, count: %zu, data: '"SV_FMT"'", values.capacity, values.count, sv_fmt_arg(values));
+  printf("str: capacity: %zu, count: %zu, data: '"SV_FMT"'", str.capacity, str.count, sv_fmt_arg(str));
 
-  String_View view = sb_substr(&builder, 0, builder.count);
-  printf("%.*s\n", SV_FMT_ARG(view));
-
-  sb_free(&builder);
+  string_free(&str);
+  printf("str: capacity: %zu, count: %zu, data: '"SV_FMT"'", str.capacity, str.count, sv_fmt_arg(str));
 }
 ```
 
+### String_Builder
+
 Common string operations include:
 
-- `sb_append`
-- `sb_append_cstr`
-- `sb_append_strlit`
-- `sb_append_sv`
-- `sb_appendf`
-- `sb_append_repeat`
-- `sb_null_terminate`
-- `sb_free`
-- `sv_eq`
-- `sv_starts_with`
-- `sv_ends_with`
-- `sv_trim`
-- `sv_chop_left`
-- `sv_chop_right`
-- `sv_chop_by_delim`
-- `sv_utf_length`
+- [`sb_free(sb)`](./str.h#L10): Frees the buffer of `sb` and resets fields to 0.
+- [`sb_null_terminate(sb)`](./str.h#L10): Reallocate underlying string as cstr with null terminal and `capacity == count + 1`.
+- [`sb_first(sb)`](./str.h#L10): Returns the first character of `sb`.
+- [`sb_last(sb)`](./str.h#L10): Returns the last character of `sb`.
+- [`sb_at(sb, index)`](./str.h#L10): Returns the character at `index`.
+- [`sb_append(sb, character)`](./str.h#L10): Appends a single character. Returns number of characters added.
+- [`sb_append_buf(sb, buffer, count)`](./str.h#L10): Appends `count` characters from `buffer`. Returns number of characters added.
+- [`sb_vappendf(sb, fmt, ap)`](./str.h#L10): Appends formatted string. Returns number of characters added.
+- [`sb_appendf(sb, fmt, ...)`](./str.h#L10): Appends formatted string. Returns number of characters added.
+- [`sb_append_cstr(sb, cstr)`](./str.h#L10): Appends a null-terminated C string. Returns number of characters added.
+- [`sb_append_strlit(sb, str)`](./str.h#L10): Appends a string literal. Returns number of characters added.
+- [`sb_append_sv(sb, sv)`](./str.h#L10): Appends a `String_View` compatible value. Returns number of characters added.
+- [`sb_append_repeat(sb, character, count)`](./str.h#L10): Appends `character` repeated `count` times. Returns number of characters added.
+- [`sb_append_null(sb)`](./str.h#L10): Appends `'\0'` directly to `sb`. Returns number of characters added.
+- [`sb_append_pad_align(sb, size, [filler])`](./str.h#L10): Pads `sb` up to a multiple boundary of `size` using `filler` (defaults to `'\0'`). Returns number of characters added.
+- [`sb_substr(sb, [[start], count])`](./str.h#L10): Extracts a `String_View` slice from `sb`.
+- [`sb_copy(some_sb_append, ...some_sb_append_arguments)`](./str.h#L10): Executes `some_sb_append` callback on a temporary `String_Builder` and returns it.
+
+### Stringify_State
+
+Helper utilities, usefull to create `sb_append_` like functions. All `sb_append_` functions can accept `NULL` pointer as `sb` and will still return number of characters that would have been written.
+
+- [`make_stringify_state(sb, capacity)`](./str.h#L): Initializes a `Stringify_State` structure, ensuring `sb` has target capacity.
+- [`stringify_append(state, some_sb_append, ...)`](./str.h#L): Runs `some_sb_append` callback into the state's `sb` and updates total appended count.
+- [`stringify_ptr(state, [offset])`](./str.h#L): Computes pointer relative to the start position of this stringify session.
+
+Example of usage:
+
+```c
+size_t sb_append_rand(String_Builder *sb, size_t size) {
+  Stringify_State state = make_stringify_state(sb, size - 1); // won't be enough eventually, but it's ok, cause we are using String_Builder
+  stringify_append(&state, sb_append, ':');
+  for (size_t index = 0; index < size; index += 1) {
+    stringify_append(&state, sb_append, 'a' + rand() % 10);
+  }
+  if (state.sb) {
+    for (size_t index = 0; index < size; index += 1) {
+      state.sb.data[index] += 1;
+    }
+    da_reserve(&state.sb, state.sb.count + 2);
+    *stringify_ptr(&state) = '(';
+    state.count += 1;
+    *stringify_ptr(&state) = ')';
+    state.count += 1;
+  } else {
+    state.count += 2;
+  }
+  return state.count;
+}
+```
+
+### Stringify sinks
+
+Library provides couple of
+
+- [`fprintf_stringify(f, some_sb_append, ...)`](./str.h#L): Formats output directly to `FILE *f` using `some_sb_append` without allocating a long-lived string.
+- [`printf_stringify(some_sb_append, ...)`](./str.h#L): Formats directly to `stdout` using `some_sb_append`.
+
+Example of usage:
+
+```c
+String str = stringify(sb_append, 't');
+fprintf_stringify(stderr, sb_append_sv, sv_from_strlit("test"));
+```
+
+### String
+
+- [`string_from_sb(sb)`](./str.h#L): Consumes `sb`, null-terminates it, transfers dynamic buffer ownership to a `String`.
+- [`string_from(some_sb_append, ...some_sb_append_arguments)`](./str.h#L): Runs `some_sb_append` to populate a builder and returns an owning `String`.
+- [`string_from_strlit(str)`](./str.h#L): Initializes an immutable `String` wrapper pointing directly to `str`.
+- [`string_assign(dst, src)`](./str.h#L): Asserts `dst` is empty, then copies fields from `src`.
+- [`string_free(str)`](./str.h#L): Frees the heap allocation backing `str` and zeroes out the struct.
+
+Example of usage:
+
+```c
+String str1 = string_from_sb(sb_copy(sb_append, 1));
+String str2 = string_from(sb_append, 't');
+String str3 = string_from_strlit("test");
+String str4 = {0};
+string_assign(&str4, string_from_strlit("test"));
+string_free(&str1);
+string_free(&str2);
+string_free(&str3);
+string_free(&str4);
+```
+
+### String_View
+
+- [`sv_from_parts(data, count)`](./str.h#L): Constructs a `String_View` from pointer and length.
+- [`sv_from_like(value)`](./str.h#L): Polymorphic conversion macro mapping any String_View-like into `String_View`.
+- [`sv_from_strlit(str)`](./str.h#L): Creates a `String_View` from a compile-time string literal.
+- [`sv_from_cstr(str)`](./str.h#L): Creates a `String_View` from a standard C-string (`strlen`).
+- [`sv_eq(a, b)`](./str.h#L): Compares two string views.
+- [`sv_starts_with(sv, prefix)`](./str.h#L): Returns `true` if `sv` starts with `prefix`.
+- [`sv_ends_with(sv, suffix)`](./str.h#L): Returns `true` if `sv` ends with `suffix`.
+
+Slicing, Chopping & Trimming:
+
+- [`sv_chop_left(sv, [n])`](./str.h#L): Mutates `sv` by removing `n` elements (default `1`) from the left and returns the chopped prefix.
+- [`sv_chop_right(sv, [n])`](./str.h#L): Mutates `sv` by removing `n` elements (default `1`) from the right and returns the chopped suffix.
+- [`sv_find_expr(sv, id, expr)`](./str.h#L): Searches forward for element matching `expr`. Same as `da_find_expr`.
+- [`sv_find_pred(sv, predicate)`](./str.h#L): Searches forward for element satisfying `predicate`. Same as `da_find_pred`.
+- [`sv_find_right_expr(sv, id, expr)`](./str.h#L): Searches backward for element matching `expr`. Same as `da_find_right_expr`.
+- [`sv_find_right_pred(sv, predicate)`](./str.h#L): Searches backward for element satisfying `predicate`. Same as `da_find_right_pred`.
+- [`sv_chop_while_expr(sv, id, expr)`](./str.h#L): Chops prefix while `expr` evaluates to true. Same as `da_slice_chop_while_expr`.
+- [`sv_chop_while_pred(sv, predicate)`](./str.h#L): Chops prefix while `predicate` evaluates to true. Same as `da_slice_chop_while_pred`.
+- [`sv_chop_while(sv, predicate)`](./str.h#L): Polymorphic chop-left macro accepting `int(*)(int)`, `bool(*)(char)`, or `bool(*)(char, size_t)`.
+- [`sv_chop_right_while_expr(sv, id, expr)`](./str.h#L): Chops suffix from right while `expr` is true. Same as `da_slice_chop_right_while_expr`.
+- [`sv_chop_right_while_pred(sv, predicate)`](./str.h#L): Chops suffix from right while `predicate` is true. Same as `da_slice_chop_right_while_pred`.
+- [`sv_chop_right_while(sv, predicate)`](./str.h#L): Polymorphic chop-right macro accepting `int(*)(int)`, `bool(*)(char)`, or `bool(*)(char, size_t)`.
+- [`sv_chop_by_delim_expr(sv, id, expr)`](./str.h#L): Chops prefix up to first match of `expr`. Same as `da_slice_chop_by_delim_expr`.
+- [`sv_chop_by_delim_pred(sv, predicate)`](./str.h#L): Chops prefix up to first match of `predicate`. Same as `da_slice_chop_by_delim_pred`.
+- [`sv_chop_by_delim(sv, predicate)`](./str.h#L): Polymorphic delimiter chop accepting single-char predicate variants.
+- [`sv_chop_right_by_delim_expr(sv, id, expr)`](./str.h#L): Chops suffix back to last match of `expr`. Same as `da_slice_chop_right_by_delim_expr`.
+- [`sv_chop_right_by_delim_pred(sv, predicate)`](./str.h#L): Chops suffix back to last match of `predicate`. Same as `da_slice_chop_right_by_delim_pred`.
+- [`sv_chop_right_by_delim(sv, predicate)`](./str.h#L): Polymorphic delimiter chop-right accepting single-char predicate variants.
+- [`sv_trim_left(sv)`](./str.h#L): Strips leading whitespace (`isspace`) from `sv`.
+- [`sv_trim_right(sv)`](./str.h#L): Strips trailing whitespace (`isspace`) from `sv`.
+- [`sv_trim(sv)`](./str.h#L): Trims both leading and trailing whitespace from `sv`.
+- [`sv_chop_by_char_delim(sv, delimeter)`](./str.h#L): Splits `sv` at the first occurrence of character `delimeter`.
+- [`sv_chop_right_by_char_delim(sv, delimeter)`](./str.h#L): Splits `sv` from the right at the last occurrence of character `delimeter`.
+- [`sv_chop_by_sv(sv, delimeter)`](./str.h#L): Splits `sv` at first occurrence of `String_View` `delimeter`.
+- [`sv_chop_right_by_sv(sv, delimeter)`](./str.h#L): Splits `sv` from right at last occurrence of `String_View` `delimeter`.
+
+Utilities:
+
+- [`SV_FMT`](./str.h#L): Format string constant `"%.*s"` for `printf` family functions.
+- [`sv_fmt_arg(sv)`](./str.h#L): Expands to `(int)(sv).count, (sv).data` for use with `SV_FMT`.
+
+Example of usage:
+
+```c
+String_View sv_lit  = sv_from_strlit("  (define foo 42)  ");
+String_View sv_cstr = sv_from_cstr("hello world");
+String_View trimmed = sv_trim(sv_lit);
+printf("Trimmed: '" SV_FMT "'\n", sv_fmt_arg(trimmed)); // "(define foo 42)"
+
+String_View input = sv_from_strlit("car,cdr,cons,quote");
+printf("Chopping CSV tokens:\n");
+while (input.count) {
+  String_View token = sv_chop_by_char_delim(&input, ',');
+  printf(" - Token: " SV_FMT "\n", sv_fmt_arg(token));
+}
+
+String_View sexpr = sv_from_strlit("(+ 10 20)");
+if (sv_starts_with(sexpr, sv_from_strlit("("))) sv_chop_left(&sexpr, 1);
+if (sv_ends_with(sexpr, sv_from_strlit(")"))) sv_chop_right(&sexpr, 1);
+printf("\nInside parens: '" SV_FMT "'\n", sv_fmt_arg(sexpr)); // "+ 10 20"
+
+String_View op = sv_chop_by_char_delim(&sexpr, ' ');
+if (sv_eq(op, sv_from_strlit("+"))) printf("Op is addition\n");
+```
 
 ## Reference counting
 
