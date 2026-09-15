@@ -1,11 +1,12 @@
+#define FLOATS_IGNORE_F16_WARNINGS
 #define DA_IMPL
 #include <da.h>
 #define STR_IMPL
 #include "str.h"
 #define STR_UTF_IMPL
 #include "str_utf.h"
-#define STR_INTEGER_IMPL
-#include "str_integer.h"
+#define STR_NUMBERS_IMPL
+#include "str_numbers.h"
 
 int main(void) {
   String_Builder sb = {0};

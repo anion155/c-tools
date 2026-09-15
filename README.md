@@ -10,6 +10,8 @@ The project provides typed dynamic arrays, string builders and views, UTF-8 help
 - [`str.h`](#strings) String, string builder and non-owning string views
 - [`str_utf.h`](#strings-utf) UTF utilities for `str.h` library
 - [`str_integers.h`](#strings-integer) Integer utilities for `str.h` library
+- [`str_floats.h`](#strings-floats) Floating utilities for `str.h` library
+- [`str_numbers.h`](#strings-numbers) Number utilities for `str.h` library
 - `rc.h` Reference-counted and weak references
 - `nanoid`-style random identifiers
 - `floats.h` Floating-point representation and conversion helpers
@@ -545,6 +547,14 @@ int main(void) {
 }
 ```
 
+## Strings numbers
+
+[`str_numbers.h`](./str_numbers.h) provides convinient polymorphic function to stringify
+any kind of number, using [`str_integers.h`](#strings-integers) and [`str_floats.h`](#strings-floats).
+
+- [`sb_append_number_fmt(sb, value, fmt)`](./str_numbers.h#L167): polymorphic floating types formatter.
+- [`sb_append_number(sb, value, ...fmt_args)`](./str_numbers.h#L177): polymorphic floating types formatter.
+
 ## Reference counting
 
 [rc.h](./rc.h) provides strong and weak references with optional destructors and
@@ -593,22 +603,3 @@ char *id = nanoid("item_", 12);
 /* Use id... */
 free(id);
 ```
-
-## Floating-point utilities
-
-[floats.h](./floats.h) contains portable canonical representations and conversion
-helpers for floating-point formats including:
-
-- 16-bit floating point
-- 80-bit extended precision
-- 128-bit floating point
-- 128-bit double-pair representations
-
-[ryu.h](./ryu.h) contains Ryu-based floating-point conversion support for
-round-trippable decimal formatting.
-
-## Other headers
-
-- [abort.h](./abort.h): panicf, TODO, UNREACHABLE, and ASSERT
-- [defines.h](./defines.h): preprocessor helpers, type assertions, stringification, defaults, and compiler attributes
-- [utf.h](./utf.h): UTF-8 character-length lookup table

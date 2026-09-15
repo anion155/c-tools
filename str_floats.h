@@ -11,8 +11,8 @@
   int main(void) {
     String_Builder sb = {0};
     sb_append_floating_number(&sb, (long)120349);
-    sb_append_floating_number(&sb, (long long)120349, .kind = SB_INTEGER_FORMAT_KIND_HEX);
-    sb_append_floating_number(&sb, (char)126, .kind = SB_INTEGER_FORMAT_KIND_BINARY);
+    sb_append_floating_number(&sb, (long long)120349, .kind = SB_FLOATING_FORMAT_KIND_HEX);
+    sb_append_floating_number(&sb, (char)126, .kind = SB_FLOATING_FORMAT_KIND_FIXED, .precision = 2);
   }
  * ```
  *
