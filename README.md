@@ -159,6 +159,7 @@ Slice methods:
 Const array methods:
 
 - [`da_const_init_from_arraylit(Value_Type, [item1, item2, ...])`](./da.h#L523): Constructs a read-only dynamic array compatible structure initialized from a compound literal array.
+- [`da_const_free(da)`](./da.h#L530): Frees `data` buffer, zeroes `count`, and resets pointer to `NULL`.
 
 The default initial capacity is `256` and can be overridden with `DA_INIT_CAP`.
 
@@ -330,6 +331,7 @@ fprintf_stringify(stderr, sb_append_sv, sv_from_strlit("test"));
 
 ### String
 
+- [`string_from_parts(data, count)`](./str.h#L233): Constructs a `String` from pointer and length.
 - [`string_from_sb(sb)`](./str.h#L226): Consumes `sb`, null-terminates it, transfers dynamic buffer ownership to a `String`.
 - [`string_from(some_sb_append, ...some_sb_append_arguments)`](./str.h#L236): Runs `some_sb_append` to populate a builder and returns an owning `String`.
 - [`string_from_strlit(str)`](./str.h#L241): Initializes an immutable `String` wrapper pointing directly to `str`.

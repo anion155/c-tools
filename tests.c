@@ -11,18 +11,55 @@
 #include "abort.h"
 #define RC_IMPL
 #include "rc.h"
+#define FS_PATH_IMPL
+#include "fs_path.h"
+
+static void show(const char *label, Fs_Path path) {
+  Fs_Path_Render r = fs_path_render(path);
+  printf("%-10s %-22s %zu segments: [", label, r.cstr.data, r.path.count);
+  for (size_t index = 0; index < path.count; index += 1) {
+    if (index) printf(",");
+    printf("\"" SV_FMT "\"", sv_fmt_arg(path.data[index]));
+  }
+  printf("]\n");
+  fs_path_render_free(&r);
+}
 
 int main(void) {
-  String_Builder sb = {0};
-  sb_append_strlit(&sb, "test");
-  sb_append(&sb, ':');
-  sb_appendf(&sb, " %d", 10);
-  printf("sb: capacity: %zu, count: %zu, data: '" SV_FMT "'\n", sb.capacity, sb.count, sv_fmt_arg(sb));
+  Fs_Path cwd = fs_path_parse_strlit("/home/user/project");
+  Fs_Path rel = fs_path_parse_strlit("../lib//./foo.c");
+  Fs_Path abs = fs_path_parse_strlit("/etc/../usr/bin");
+  Fs_Path up = fs_path_parse_strlit("../../..");
+  Fs_Path none = {0};
 
-  String str = string_from_sb(&sb);
-  printf("sb: capacity: %zu, count: %zu, data: '" SV_FMT "'\n", sb.capacity, sb.count, sv_fmt_arg(sb));
-  printf("str: count: %zu, data: '" SV_FMT "'\n", str.count, sv_fmt_arg(str));
+  show("cwd", cwd);
+  show("rel", rel);
+  show("abs", abs);
+  show("up", up);
+  show("none", none);
+  printf("\n");
 
-  string_free(&str);
-  printf("str: count: %zu, data: '" SV_FMT "'\n", str.count, sv_fmt_arg(str));
+  Fs_Path a = fs_path_join(cwd, rel);   // /home/user/lib/foo.c
+  Fs_Path b = fs_path_join(cwd, abs);   // /usr/bin (absolute replaces base)
+  Fs_Path c = fs_path_join(cwd, up);    // /
+  Fs_Path d = fs_path_join(none, none); // .
+  fs_path_normalize(&rel);              // ../lib/foo.c (stays relative)
+
+  show("cwd+rel", a);
+  show("cwd+abs", b);
+  show("cwd+up", c);
+  show("empty", d);
+  show("normalize", rel);
+  printf("\n");
+
+  printf("a absolute? %d, d relative? %d\n", fs_path_is_absolute(a), fs_path_is_relative(d));
+
+  fs_path_free(&cwd);
+  fs_path_free(&rel);
+  fs_path_free(&abs);
+  fs_path_free(&up);
+  fs_path_free(&a);
+  fs_path_free(&b);
+  fs_path_free(&c);
+  fs_path_free(&d);
 }

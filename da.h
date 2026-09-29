@@ -524,6 +524,18 @@
     ({.data = (Value_Type[]){__VA_ARGS__}, .count = sizeof((Value_Type[]){__VA_ARGS__}) / sizeof(Value_Type)}), \
     ({.data = NULL, .count = 0}), __VA_ARGS__))
 
+/**
+ * Frees `data` buffer, zeroes `count`, and resets pointer to `NULL`.
+ */
+#define da_const_free(dc) ({         \
+  typeof(*(dc)) *_dc_f_ = (dc);      \
+  if (_dc_f_->data) {                \
+    free(_dc_f_->data);              \
+    *da__reassign(_dc_f_) = NULL;    \
+    *(size_t *)(&_dc_f_->count) = 0; \
+  }                                  \
+})
+
 #endif // DA_H
 
 /**

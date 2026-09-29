@@ -229,6 +229,8 @@ Stringify_State make_stringify_state(String_Builder *sb, size_t capacity) {
  */
 #define printf_stringify(some_sb_append, ...) fprintf_stringify(stdout, some_sb_append __VA_OPT__(, ) __VA_ARGS__)
 
+/** Constructs a `String` from pointer and length. */
+#define string_from_parts(data_, count_) ((String){.data = (data_), .count = (count_)})
 /** Consumes `sb`, null-terminates it, transfers dynamic buffer ownership to a `String`. */
 #define string_from_sb(sb) ({                                 \
   String_Builder *_sb_ = (sb);                                \
@@ -252,14 +254,7 @@ static inline void string_assign(String *dst, String src) {
   memcpy(dst, &src, sizeof(String));
 }
 /** Frees the heap allocation backing `str` and zeroes out the struct. */
-#define string_free(str) ({          \
-  typeof(*(str)) *_str_ = (str);     \
-  char *data = *da__reassign(_str_); \
-  if (data) {                        \
-    free(data);                      \
-    memset(str, 0, sizeof(String));  \
-  }                                  \
-})
+#define string_free(str) da_const_free((str))
 
 /** Constructs a `String_View` from pointer and length. */
 #define sv_from_parts(data_, count_) ((String_View){.data = (data_), .count = (count_)})
