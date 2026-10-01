@@ -204,9 +204,9 @@
 /**
  * Internal helper to get modifiable pointer to `data.
  */
-#define da__reassign(da) ({                           \
-  typeof(*(da)) *_da_dnc_ = (da);                     \
-  (typeof_unqual(*_da_dnc_->data) **)&_da_dnc_->data; \
+#define da__reassign(da) ({                    \
+  typeof(*(da)) *_da_dnc_ = (da);              \
+  (typeof(*_da_dnc_->data) **)&_da_dnc_->data; \
 })
 
 /**
@@ -278,24 +278,26 @@
 /**
  * Appends a single `item` to the dynamic array, growing capacity if necessary.
  */
-#define da_append(da, item) ({           \
-  typeof(*(da)) *_da_a_ = (da);          \
-  da_reserve(_da_a_, _da_a_->count + 1); \
-  _da_a_->data[_da_a_->count] = (item);  \
-  _da_a_->count += 1;                    \
-  1;                                     \
+#define da_append(da, item) ({                                                                             \
+  typeof(*(da)) *_da_a_ = (da);                                                                            \
+  da_reserve(_da_a_, _da_a_->count + 1);                                                                   \
+  memcpy(_da_a_->data + _da_a_->count, ((typeof(*_da_a_->data) *)&(item)), sizeof(typeof(*_da_a_->data))); \
+  _da_a_->count += 1;                                                                                      \
+  1;                                                                                                       \
 })
 
 /**
  * Appends `new_count` elements from buffer `new_items`.
  */
-#define da_append_many_n(da, new_items, new_count) ({                                           \
-  typeof(*(da)) *_da_amn_ = (da);                                                               \
-  size_t _new_count_ = (new_count);                                                             \
-  da_reserve(_da_amn_, _da_amn_->count + _new_count_);                                          \
-  memcpy(_da_amn_->data + _da_amn_->count, (new_items), _new_count_ * sizeof(*_da_amn_->data)); \
-  _da_amn_->count += _new_count_;                                                               \
-  _new_count_;                                                                                  \
+#define da_append_many_n(da, new_items, new_count) ({                                             \
+  typeof(*(da)) *_da_amn_ = (da);                                                                 \
+  size_t _new_count_ = (new_count);                                                               \
+  if (_new_count_) {                                                                              \
+    da_reserve(_da_amn_, _da_amn_->count + _new_count_);                                          \
+    memcpy(_da_amn_->data + _da_amn_->count, (new_items), _new_count_ * sizeof(*_da_amn_->data)); \
+    _da_amn_->count += _new_count_;                                                               \
+  }                                                                                               \
+  _new_count_;                                                                                    \
 })
 
 /**
@@ -324,12 +326,12 @@
 /**
  * Removes element at `index` by swapping it with the last element.
  */
-#define da_remove_unordered(da, index) ({                     \
-  typeof(*(da)) *_da_ru_ = (da);                              \
-  size_t _index_ = (index);                                   \
-  assert(_index_ < _da_ru_->count);                           \
-  _da_ru_->data[_index_] = _da_ru_->data[_da_ru_->count - 1]; \
-  _da_ru_->count -= 1;                                        \
+#define da_remove_unordered(da, index) ({                                                      \
+  typeof(*(da)) *_da_ru_ = (da);                                                               \
+  size_t _index_ = (index);                                                                    \
+  assert(_index_ < _da_ru_->count);                                                            \
+  memcpy(_da_ru_->data + _index_, _da_ru_->data + _da_ru_->count - 1, sizeof(*_da_ru_->data)); \
+  _da_ru_->count -= 1;                                                                         \
 })
 
 /**
@@ -356,7 +358,7 @@
   assert(_da_s_.count >= start);                                                                               \
   size_t slice_count = EXPAND_MACRO(WITH_DEFAULT, _da_s_.count - start __VA_OPT__(, ) REST_ARGS(__VA_ARGS__)); \
   assert(_da_s_.count >= start + slice_count);                                                                 \
-  typeof_unqual(*((Slice_Type){0}).data) *_data_ = _da_s_.data;                                                \
+  typeof(*((Slice_Type){0}).data) *_data_ = _da_s_.data;                                                       \
   UNUSED(_data_);                                                                                              \
   (Slice_Type){.data = (typeof(((Slice_Type){0}).data))_da_s_.data + start, .count = slice_count};             \
 })
@@ -524,6 +526,12 @@
     ({.data = (Value_Type[]){__VA_ARGS__}, .count = sizeof((Value_Type[]){__VA_ARGS__}) / sizeof(Value_Type)}), \
     ({.data = NULL, .count = 0}), __VA_ARGS__))
 
+#define da_const_assign(dc, src) ({        \
+  typeof(*(dc)) *_dc_a_ = (dc);            \
+  ASSERT(_dc_a_ && !_dc_a_->data);         \
+  memcpy(_dc_a_, &(src), sizeof(*_dc_a_)); \
+})
+
 /**
  * Frees `data` buffer, zeroes `count`, and resets pointer to `NULL`.
  */
@@ -534,6 +542,40 @@
     *da__reassign(_dc_f_) = NULL;    \
     *(size_t *)(&_dc_f_->count) = 0; \
   }                                  \
+})
+
+#define Queue(Value_Type, ...) \
+  struct __VA_ARGS__ {         \
+    Da(Value_Type) array;      \
+    typeof(Value_Type) *data;  \
+    size_t count;              \
+  }
+
+#define queue_update(qu) ({                                                    \
+  typeof(*qu) *_qu_p_ = (qu);                                                  \
+  ssize_t offset = _qu_p_->array.data ? _qu_p_->data - _qu_p_->array.data : 0; \
+  ASSERT(offset >= 0);                                                         \
+  _qu_p_->data = _qu_p_->array.data + offset;                                  \
+  _qu_p_->count = _qu_p_->array.count - offset;                                \
+})
+#define queue_push(qu, value) ({      \
+  typeof(*qu) *_qu_p_ = (qu);         \
+  da_append(&_qu_p_->array, (value)); \
+  queue_update(_qu_p_);               \
+})
+#define queue_push_many_n(qu, new_items, new_count) ({          \
+  typeof(*qu) *_qu_pmn_ = (qu);                                 \
+  da_append_many_n(&_qu_pmn_->array, (new_items), (new_count)); \
+  queue_update(_qu_pmn_);                                       \
+})
+#define queue_push_many(qu, ...) ({              \
+  typeof(*qu) *_qu_pmn_ = (qu);                  \
+  da_append_many(&_qu_pmn_->array, __VA_ARGS__); \
+  queue_update(_qu_pmn_);                        \
+})
+#define queue_shift(qu) ({      \
+  typeof(*qu) *_qu_pmn_ = (qu); \
+  da_slice_shift(_qu_pmn_);     \
 })
 
 #endif // DA_H

@@ -11,6 +11,8 @@
 #include "abort.h"
 #define RC_IMPL
 #include "rc.h"
+#define FS_IMPL
+#include "fs.h"
 #define FS_PATH_IMPL
 #include "fs_path.h"
 
@@ -26,10 +28,10 @@ static void show(const char *label, Fs_Path path) {
 }
 
 int main(void) {
-  Fs_Path cwd = fs_path_parse_strlit("/home/user/project");
-  Fs_Path rel = fs_path_parse_strlit("../lib//./foo.c");
-  Fs_Path abs = fs_path_parse_strlit("/etc/../usr/bin");
-  Fs_Path up = fs_path_parse_strlit("../../..");
+  Fs_Path cwd = fs_path_parse(sv_from_strlit("/home/user/project"));
+  Fs_Path rel = fs_path_parse(sv_from_strlit("../lib//./foo.c"));
+  Fs_Path abs = fs_path_parse(sv_from_strlit("/etc/../usr/bin"));
+  Fs_Path up = fs_path_parse(sv_from_strlit("../../.."));
   Fs_Path none = {0};
 
   show("cwd", cwd);

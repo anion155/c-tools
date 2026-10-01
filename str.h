@@ -248,10 +248,9 @@ Stringify_State make_stringify_state(String_Builder *sb, size_t capacity) {
 })
 /** Initializes an immutable `String` wrapper pointing directly to `str`. */
 #define string_from_strlit(str) (String){.data = str, .count = sizeof(str) - 1}
-/** Asserts `dst` is empty, then copies fields from `src`. */
+/** Assign `src` to `dst`, `dst` must be empty. */
 static inline void string_assign(String *dst, String src) {
-  assert(dst && !dst->count && !dst->data);
-  memcpy(dst, &src, sizeof(String));
+  da_const_assign(dst, src);
 }
 /** Frees the heap allocation backing `str` and zeroes out the struct. */
 #define string_free(str) da_const_free((str))
