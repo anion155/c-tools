@@ -324,13 +324,41 @@ static inline String_View sv__chop_right(String_View *sv, size_t count) {
 /** Searches backward for element satisfying `predicate`. Same as `da_find_right_pred`. */
 #define sv_find_right_pred(sv, predicate) da_find_right_pred((sv), predicate)
 
+ssize_t sv__find_int(String_View sv, int (*predicate)(int x));
+ssize_t sv__find_i(String_View sv, bool (*predicate)(char character, size_t index));
+ssize_t sv__find(String_View sv, bool (*predicate)(char character));
+#define sv_find(sv, predicate) _Generic((predicate),                                            \
+    int (*predicate)(int x): sv__find_int(sv_from_like(sv), (predicate)),                       \
+    bool (*predicate)(char character, size_t index): sv__find_i(sv_from_like(sv), (predicate)), \
+    bool (*predicate)(char character): sv__find(sv_from_like(sv), (predicate)))
+
+ssize_t sv__find_right_int(String_View sv, int (*predicate)(int x));
+ssize_t sv__find_right_i(String_View sv, bool (*predicate)(char character, size_t index));
+ssize_t sv__find_right(String_View sv, bool (*predicate)(char character));
+#define sv_find_right(sv, predicate) _Generic((predicate),                                            \
+    int (*predicate)(int x): sv__find_right_int(sv_from_like(sv), (predicate)),                       \
+    bool (*predicate)(char character, size_t index): sv__find_right_i(sv_from_like(sv), (predicate)), \
+    bool (*predicate)(char character): sv__find_right(sv_from_like(sv), (predicate)))
+
+ssize_t sv__find_char(String_View sv, char character);
+#define sv_find_char(sv, character) sv__find_char(sv_from_like(sv), (character))
+
+ssize_t sv__find_right_char(String_View sv, char character);
+#define sv_find_right_char(sv, character) sv__find_right_char(sv_from_like(sv), (character))
+
+ssize_t sv__find_sv(String_View sv, String_View subsv);
+#define sv_find_sv(sv, subsv) sv__find_sv(sv_from_like(sv), sv_from_like(subsv))
+
+ssize_t sv__find_right_sv(String_View sv, String_View subsv);
+#define sv_find_right_sv(sv, subsv) sv__find_right_sv(sv_from_like(sv), sv_from_like(subsv))
+
 /** Chops prefix while `expr` evaluates to true. Same as `da_slice_chop_while_expr`. */
 #define sv_chop_while_expr(sv, id, expr) da_slice_chop_while_expr((sv), id, expr)
 /** Chops prefix while `predicate` evaluates to true. Same as `da_slice_chop_while_pred`. */
 #define sv_chop_while_pred(sv, predicate) da_slice_chop_while_pred((sv), predicate)
 String_View sv__chop_while_int(String_View *sv, int (*predicate)(int x));
-String_View sv__chop_while(String_View *sv, bool (*predicate)(char character));
 String_View sv__chop_while_i(String_View *sv, bool (*predicate)(char character, size_t index));
+String_View sv__chop_while(String_View *sv, bool (*predicate)(char character));
 /** Polymorphic chop-left macro accepting. */
 #define sv_chop_while(sv, predicate) _Generic((predicate),                                \
     int (*predicate)(int x): sv__chop_while_int((sv), (predicate)),                       \
@@ -342,8 +370,8 @@ String_View sv__chop_while_i(String_View *sv, bool (*predicate)(char character, 
 /** Chops suffix from right while `predicate` is true. Same as `da_slice_chop_right_while_pred`. */
 #define sv_chop_right_while_pred(sv, predicate) da_slice_chop_right_while_pred((sv), predicate)
 String_View sv__chop_right_while_int(String_View *sv, int (*predicate)(int x));
-String_View sv__chop_right_while(String_View *sv, bool (*predicate)(char character));
 String_View sv__chop_right_while_i(String_View *sv, bool (*predicate)(char character, size_t index));
+String_View sv__chop_right_while(String_View *sv, bool (*predicate)(char character));
 /** Polymorphic chop-right macro accepting. */
 #define sv_chop_right_while(sv, predicate) _Generic((predicate),                                \
     int (*predicate)(int x): sv__chop_right_while_int((sv), (predicate)),                       \
@@ -355,8 +383,8 @@ String_View sv__chop_right_while_i(String_View *sv, bool (*predicate)(char chara
 /** Chops prefix up to first match of `predicate`. Same as `da_slice_chop_by_delim_pred`. */
 #define sv_chop_by_delim_pred(sv, predicate) da_slice_chop_by_delim_pred((sv), predicate)
 String_View sv__chop_by_delim_int(String_View *sv, int (*predicate)(int x));
-String_View sv__chop_by_delim(String_View *sv, bool (*predicate)(char character));
 String_View sv__chop_by_delim_i(String_View *sv, bool (*predicate)(char character, size_t index));
+String_View sv__chop_by_delim(String_View *sv, bool (*predicate)(char character));
 /** Polymorphic delimiter chop accepting single-char predicate variants. */
 #define sv_chop_by_delim(sv, predicate) _Generic((predicate),                                \
     int (*predicate)(int x): sv__chop_by_delim_int((sv), (predicate)),                       \
@@ -368,8 +396,8 @@ String_View sv__chop_by_delim_i(String_View *sv, bool (*predicate)(char characte
 /** Chops suffix back to last match of `predicate`. Same as `da_slice_chop_right_by_delim_pred`. */
 #define sv_chop_right_by_delim_pred(sv, predicate) da_slice_chop_right_by_delim_pred((sv), predicate)
 String_View sv__chop_right_by_delim_int(String_View *sv, int (*predicate)(int x));
-String_View sv__chop_right_by_delim(String_View *sv, bool (*predicate)(char character));
 String_View sv__chop_right_by_delim_i(String_View *sv, bool (*predicate)(char character, size_t index));
+String_View sv__chop_right_by_delim(String_View *sv, bool (*predicate)(char character));
 /** Polymorphic delimiter chop-right accepting single-char predicate variants. */
 #define sv_chop_right_by_delim(sv, predicate) _Generic((predicate),                                \
     int (*predicate)(int x): sv__chop_right_by_delim_int((sv), (predicate)),                       \
@@ -452,40 +480,84 @@ size_t sb__append_pad_align(String_Builder *sb, size_t size, char filler) {
   return pad;
 }
 
-String_View sv__chop_while_int(String_View *sv, int (*predicate)(int x)) {
-  return sv_chop_while_expr(sv, character, (bool)predicate((int)*character));
+ssize_t sv__find_int(String_View sv, int (*predicate)(int x)) {
+  return sv_find_expr(sv, character, (bool)predicate((int)*character));
 }
 
-String_View sv__chop_while(String_View *sv, bool (*predicate)(char character)) {
-  return sv_chop_while_expr(sv, character, predicate(*character));
+ssize_t sv__find_i(String_View sv, bool (*predicate)(char character, size_t index)) {
+  return sv_find_expr(sv, character, predicate(*character, character_index));
+}
+
+ssize_t sv__find(String_View sv, bool (*predicate)(char character)) {
+  return sv_find_expr(sv, character, predicate(*character));
+}
+
+ssize_t sv__find_right_int(String_View sv, int (*predicate)(int x)) {
+  return sv_find_right_expr(sv, character, (bool)predicate((int)*character));
+}
+
+ssize_t sv__find_right_i(String_View sv, bool (*predicate)(char character, size_t index)) {
+  return sv_find_right_expr(sv, character, predicate(*character, character_index));
+}
+
+ssize_t sv__find_right(String_View sv, bool (*predicate)(char character)) {
+  return sv_find_right_expr(sv, character, predicate(*character));
+}
+
+ssize_t sv__find_char(String_View sv, char character) {
+  return sv_find_expr(sv, it, *it == character);
+}
+
+ssize_t sv__find_right_char(String_View sv, char character) {
+  return sv_find_right_expr(sv, it, *it == character);
+}
+
+ssize_t sv__find_sv(String_View sv, String_View subsv) {
+  if (sv.count < subsv.count) return sv.count;
+  if (sv_eq(sv, subsv)) return 0;
+  return sv_find_expr(sv, it, memcmp(it, subsv.data, subsv.count) == 0);
+}
+
+ssize_t sv__find_right_sv(String_View sv, String_View subsv) {
+  if (sv.count < subsv.count) return 0;
+  if (sv_eq(sv, subsv)) return 1;
+  return sv_find_right_expr(sv, it, memcmp(it, subsv.data, subsv.count) == 0);
+}
+
+String_View sv__chop_while_int(String_View *sv, int (*predicate)(int x)) {
+  return sv_chop_while_expr(sv, character, (bool)predicate((int)*character));
 }
 
 String_View sv__chop_while_i(String_View *sv, bool (*predicate)(char character, size_t index)) {
   return sv_chop_while_expr(sv, character, predicate(*character, character_index));
 }
 
-String_View sv__chop_right_while_int(String_View *sv, int (*predicate)(int x)) {
-  return sv_chop_right_while_expr(sv, character, (bool)predicate((int)*character));
+String_View sv__chop_while(String_View *sv, bool (*predicate)(char character)) {
+  return sv_chop_while_expr(sv, character, predicate(*character));
 }
 
-String_View sv__chop_right_while(String_View *sv, bool (*predicate)(char character)) {
-  return sv_chop_right_while_expr(sv, character, predicate(*character));
+String_View sv__chop_right_while_int(String_View *sv, int (*predicate)(int x)) {
+  return sv_chop_right_while_expr(sv, character, (bool)predicate((int)*character));
 }
 
 String_View sv__chop_right_while_i(String_View *sv, bool (*predicate)(char character, size_t index)) {
   return sv_chop_right_while_expr(sv, character, predicate(*character, character_index));
 }
 
+String_View sv__chop_right_while(String_View *sv, bool (*predicate)(char character)) {
+  return sv_chop_right_while_expr(sv, character, predicate(*character));
+}
+
 String_View sv__chop_by_delim_int(String_View *sv, int (*predicate)(int x)) {
   return sv_chop_by_delim_expr(sv, character, (bool)predicate((int)*character));
 }
 
-String_View sv__chop_by_delim(String_View *sv, bool (*predicate)(char character)) {
-  return sv_chop_by_delim_expr(sv, character, predicate(*character));
-}
-
 String_View sv__chop_by_delim_i(String_View *sv, bool (*predicate)(char character, size_t index)) {
   return sv_chop_by_delim_expr(sv, character, predicate(*character, character_index));
+}
+
+String_View sv__chop_by_delim(String_View *sv, bool (*predicate)(char character)) {
+  return sv_chop_by_delim_expr(sv, character, predicate(*character));
 }
 
 String_View sv__chop_right_by_delim_int(String_View *sv, int (*predicate)(int x)) {
@@ -496,12 +568,12 @@ String_View sv__chop_right_by_delim(String_View *sv, bool (*predicate)(char char
   return sv_chop_right_by_delim_expr(sv, character, predicate(*character));
 }
 
-String_View sv__chop_right_by_delim_i(String_View *sv, bool (*predicate)(char character, size_t index)) {
-  return sv_chop_right_by_delim_expr(sv, character, predicate(*character, character_index));
-}
-
 String_View sv_chop_by_char_delim(String_View *sv, char delimeter) {
   return sv_chop_by_delim_expr(sv, character, *character == delimeter);
+}
+
+String_View sv__chop_right_by_delim_i(String_View *sv, bool (*predicate)(char character, size_t index)) {
+  return sv_chop_right_by_delim_expr(sv, character, predicate(*character, character_index));
 }
 
 String_View sv_chop_right_by_char_delim(String_View *sv, char delimeter) {
